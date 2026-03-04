@@ -52,8 +52,8 @@ public class Regex {
                 ultimoChar = charAtual;
             }
 
-            if (pattern.isEmpty()) pattern.append(padrao);
-            else                   pattern.append("|" + padrao); 
+            if (!pattern.isEmpty()) pattern.append("|");
+            pattern.append(padrao); 
         }
 
         this.pattern = Pattern.compile(pattern.toString());
