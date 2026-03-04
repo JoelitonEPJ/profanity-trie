@@ -56,6 +56,6 @@ public class Regex {
             pattern.append(padrao); 
         }
 
-        this.pattern = Pattern.compile(pattern.toString());
+        this.pattern = Pattern.compile(pattern.toString(), Pattern.CASE_INSENSITIVE);
     }
 }
