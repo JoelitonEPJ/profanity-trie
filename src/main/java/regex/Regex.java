@@ -8,9 +8,7 @@ public class Regex {
     
     private Pattern pattern;
 
-    public Regex(String pattern
-        
-    ) {
+    public Regex(String pattern) {
         this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
     }
 
