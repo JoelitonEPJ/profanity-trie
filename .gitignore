@@ -19,4 +19,12 @@
 *.tar.gz
 *.rar
 
+# Arquivos gerados, serão readicionados ao final
 bad_words_formatted.txt
+
+# IDEs
+.vscode
+.idea
+
+# gradle
+build/
