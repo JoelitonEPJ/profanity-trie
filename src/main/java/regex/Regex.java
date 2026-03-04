@@ -41,14 +41,13 @@ public class Regex {
 
         String padrao = "";
         for (int i = 0; i < palavras.length; i++) {
-            padrao = "";
             char ultimoChar = 0;
             String[] leets = {};
             for (int j = 0; j < palavras[i].length(); j++) {
                 char charAtual = Character.toLowerCase(palavras[i].charAt(j));
                 leets = leetMap.get(charAtual);
 
-                if (ultimoChar != charAtual) padrao += "(?:" + String.join("|", leets) + ")+";
+                if (ultimoChar != charAtual) padrao = "(?:" + String.join("|", leets) + ")+";
 
                 ultimoChar = charAtual;
             }
