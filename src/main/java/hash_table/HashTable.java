@@ -51,6 +51,7 @@ public class HashTable<K> {
      * @param bucketSize the number of buckets in the hash table
      * @param loadFactor the  
      */
+    @SuppressWarnings("unchecked")
     public HashTable(int bucketSize, float loadFactor) {
         this.buckets = new LinkedList[bucketSize];
         this.loadFactor = loadFactor;
