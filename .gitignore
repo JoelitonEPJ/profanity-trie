@@ -20,7 +20,7 @@
 *.rar
 
 # Arquivos gerados, serão readicionados ao final
-bad_words_formatted.txt
+data/*_words/formatted.txt
 
 # IDEs
 .vscode
