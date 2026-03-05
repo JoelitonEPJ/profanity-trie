@@ -20,7 +20,7 @@ package hash_table;
  */
 public class HashTable<Key> {
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;
-    private static final int DEFAULT_BUCKET_SIZE = 37;
+    private static final int DEFAULT_TABLE_SIZE = 37;
 
     private final float loadFactor;
     private Key[] hashTable;
@@ -30,7 +30,7 @@ public class HashTable<Key> {
      * Constructs a HashTable with the default hash size (37).
      */
     public HashTable() {
-        this(DEFAULT_BUCKET_SIZE);
+        this(DEFAULT_TABLE_SIZE);
     }
 
     /**
