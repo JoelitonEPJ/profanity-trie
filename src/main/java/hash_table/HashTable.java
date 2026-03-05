@@ -60,7 +60,7 @@ public class HashTable<Key> {
      * @param key the key to be inserted
      */
     public void insert(Key key) {
-        ensureCapacity(this.size + 1);
+        ensureCapacity(++this.size);
         int keyHash = computeHash(key);
 
         for (; this.hashTable[keyHash] != null; keyHash = circularIncrement(keyHash)) {
@@ -68,7 +68,6 @@ public class HashTable<Key> {
         }
 
         this.hashTable[keyHash] = key;
-        size++;
     }
 
     /**
