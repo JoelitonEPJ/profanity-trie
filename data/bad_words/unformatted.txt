@@ -1,4 +1,5 @@
 merda
+merdas
 caralho
 porra
 foda
@@ -118,7 +119,6 @@ fuder
 fudida
 fudido
 fuleira
-galinha
 grelinho
 grelo
 idiota
@@ -1544,7 +1544,6 @@ n00b
 noob
 Nazista
 Nerd
-Newbie
 Nhaca
 Nonsense
 Ogro
@@ -3198,3 +3197,4 @@ cocaina
 lança-perfume
 traficante
 conguito
+randola
