@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * constant time complexity for insertion, deletion, and search operations.
  *
  * <p>
- * The hash table uses separate chaining for collision resolution. Each bucket in the hash map is a
+ * The hash table uses separate chaining for collision resolution. Each bucket in the hash table is a
  * linked list that stores its keys. When a collision occurs (i.e., when two keys hash to the same index),
  * the new key is simply added to the corresponding linked list.
  * </p>
