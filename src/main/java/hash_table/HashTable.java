@@ -1,299 +1,180 @@
 package hash_table;
 
+import java.util.LinkedList;
+
 /**
- * A generic HashMap implementation that uses separate chaining with linked lists
- * to handle collisions. The class supports basic operations such as insert, delete,
- * and search, as well as displaying the contents of the hash map.
+ * A generic implementation of a hash table using an array of linked lists for collision resolution.
+ * This class provides a way to store keys efficiently, allowing for average-case
+ * constant time complexity for insertion, deletion, and search operations.
  *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
+ * <p>
+ * The hash table uses separate chaining for collision resolution. Each bucket in the hash map is a
+ * linked list that stores its keys. When a collision occurs (i.e., when two keys hash to the same index),
+ * the new key is simply added to the corresponding linked list.
+ * </p>
+ *
+ * <p>
+ * The hash table automatically resizes itself when the load factor exceeds {@code loadFactor}. The load factor is
+ * defined as the ratio of the number of entries to the number of buckets. When resizing occurs,
+ * all existing entries are rehashed and inserted into the new buckets.
+ * </p>
+ *
+ * @param <K> the type of keys maintained by this hash table
  */
-@SuppressWarnings("rawtypes")
-public class HashTable<K, V> {
-    private final int hashSize;
-    private final LinkedList<K, V>[] buckets;
+public class HashTable<K> {
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    private static final int DEFAULT_BUCKET_SIZE = 53;
+
+    private LinkedList<K>[] buckets;
+    private final float loadFactor;
+    private int size;
 
     /**
-     * Constructs a HashMap with the specified hash size.
-     *
-     * @param hashSize the number of buckets in the hash map
+     * Constructs a HashTable with the default hash size (17).
      */
-    @SuppressWarnings("unchecked")
-    public HashTable(int hashSize) {
-        this.hashSize = hashSize;
-        // Safe to suppress warning because we are creating an array of generic type
-        this.buckets = new LinkedList[hashSize];
-        for (int i = 0; i < hashSize; i++) {
-            buckets[i] = new LinkedList<>();
+    public HashTable() {
+        this(DEFAULT_BUCKET_SIZE);
+    }
+
+    /**
+     * Constructs a HashTable with the specified hash size.
+     *
+     * @param bucketSize the number of buckets in the hash table
+     */
+    public HashTable(int bucketSize) {
+        this(bucketSize, DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Constructs a HashTable with the specified hash size and load factor.
+     *
+     * @param bucketSize the number of buckets in the hash table
+     * @param loadFactor the  
+     */
+    public HashTable(int bucketSize, float loadFactor) {
+        this.buckets = new LinkedList[bucketSize];
+        this.loadFactor = loadFactor;
+
+        // calls clear to initialize the buckets
+        this.clear();
+    }
+
+    /**
+     * Inserts the specified key into the hash table.
+     *
+     * @param key the key to be inserted
+     */
+    public void insert(K key) {
+        int hash = computeHash(key);
+        ensureCapacity(this.size + 1);
+        if (!this.buckets[hash].contains(key)) {
+            this.buckets[hash].add(key);
+            this.size += 1;
         }
     }
 
     /**
+     * Deletes the key from this hash table.
+     *
+     * @param key the key which should be deleted from the hash table
+     * @return boolean indicating if the key was succesfully deleted
+     */
+    @SuppressWarnings("")
+    public boolean delete(K key) {
+        int hash = this.computeHash(key);
+
+        if (this.buckets[hash].remove(key)) {
+            this.size -= 1;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Searches for the key in this hash table.
+     *
+     * @param key the key which should be deleted from the hash table
+     * @return boolean indicating whether or not this hash table contains this key
+     */
+    public boolean contains(K key) {
+        int hash = this.computeHash(key);
+        return this.buckets[hash].contains(key);
+    }
+
+    /**
+     * Clears the contents of the hash table by reinitializing each bucket.
+     */
+    public final void clear() {
+        for (int i = 0; i < buckets.length; i++) {
+            this.buckets[i] = new LinkedList<>();
+        }
+        this.size = 0;
+    }
+
+    /**
+     * Gets the number of keys in the hash table.
+     *
+     * @return the number of keys in the hash table
+     */
+    public int size() {
+        return this.size;
+    }
+
+    /**
      * Computes the hash code for the specified key.
-     * Null keys are hashed to bucket 0.
      *
      * @param key the key for which the hash code is to be computed
      * @return the hash code corresponding to the key
      */
     private int computeHash(K key) {
-        if (key == null) {
-            return 0; // Use a special bucket (e.g., bucket 0) for null keys
-        }
-        int hash = key.hashCode() % hashSize;
-        return hash < 0 ? hash + hashSize : hash;
+        return Math.floorMod(key.hashCode(), buckets.length);
     }
 
     /**
-     * Inserts the specified key-value pair into the hash map.
-     * If the key already exists, the value is updated.
-     *
-     * @param key   the key to be inserted
-     * @param value the value to be associated with the key
+     * Ensures that this hash table has enough capacity without surpassing the load factor.
+     * If it doesn't, execute rehash and resizes the hash table.
      */
-    public void insert(K key, V value) {
-        int hash = computeHash(key);
-        buckets[hash].insert(key, value);
+    private void ensureCapacity(int capacity) {
+        float currLoadFactor = capacity / (float) buckets.length;
+        if (currLoadFactor >= loadFactor) rehash();
     }
 
     /**
-     * Deletes the key-value pair associated with the specified key from the hash map.
-     *
-     * @param key the key whose key-value pair is to be deleted
+     * Resizes this hash table to the next prime after 2*{@code currPrime}.
+     * Is also responsible for recalculating the hashes of all its keys.
      */
-    public void delete(K key) {
-        int hash = computeHash(key);
-        buckets[hash].delete(key);
+    private void rehash() {
+        int nextPrime = getNextPrime(buckets.length);
+        HashTable<K> newHashTable = new HashTable<>(nextPrime);
+
+        for (LinkedList<K> bucket : buckets) {
+            for (K key : bucket) newHashTable.insert(key);
+        }
+
+        this.buckets = newHashTable.buckets;
     }
 
     /**
-     * Searches for the value associated with the specified key in the hash map.
-     *
-     * @param key the key whose associated value is to be returned
-     * @return the value associated with the specified key, or null if the key does not exist
+     * Gets the next prime after 2*{@code currPrime}
+     * 
+     * @return the next prime after 2*{@code currPrime}
      */
-    public V search(K key) {
-        int hash = computeHash(key);
-        Node<K, V> node = buckets[hash].findKey(key);
-        return node != null ? node.getValue() : null;
+    private int getNextPrime(int currPrime) {
+        int possiblePrime = 2 * currPrime + 1;
+        while (!isPrime(possiblePrime)) possiblePrime += 2;
+        return possiblePrime;
     }
 
     /**
-     * Displays the contents of the hash map, showing each bucket and its key-value pairs.
+     * Simplified implementation for primality test, assuming that the number is not even.
+     * 
+     * @return whether the odd number is prime
      */
-    public void display() {
-        for (int i = 0; i < hashSize; i++) {
-            System.out.printf("Bucket %d: %s%n", i, buckets[i].display());
+    private boolean isPrime(int number) {
+        for (int divisor = 3; divisor < Math.sqrt(number); divisor += 2) {
+            if (number % divisor == 0) return false;
         }
-    }
-
-    /**
-     * Clears the contents of the hash map by reinitializing each bucket.
-     */
-    public void clear() {
-        for (int i = 0; i < hashSize; i++) {
-            buckets[i] = new LinkedList<>();
-        }
-    }
-
-    /**
-     * Gets the number of key-value pairs in the hash map.
-     *
-     * @return the number of key-value pairs in the hash map
-     */
-    public int size() {
-        int size = 0;
-        for (int i = 0; i < hashSize; i++) {
-            size += buckets[i].isEmpty() ? 0 : 1;
-        }
-        return size;
-    }
-
-    /**
-     * A nested static class that represents a linked list used for separate chaining in the hash map.
-     *
-     * @param <K> the type of keys maintained by this linked list
-     * @param <V> the type of mapped values
-     */
-    public static class LinkedList<K, V> {
-        private Node<K, V> head;
-
-        /**
-         * Inserts the specified key-value pair into the linked list.
-         * If the linked list is empty, the pair becomes the head.
-         * Otherwise, the pair is added to the end of the list.
-         *
-         * @param key   the key to be inserted
-         * @param value the value to be associated with the key
-         */
-        public void insert(K key, V value) {
-            Node<K, V> existingNode = findKey(key);
-            if (existingNode != null) {
-                existingNode.setValue(value); // Update the value, even if it's null
-            } else {
-                if (isEmpty()) {
-                    head = new Node<>(key, value);
-                } else {
-                    Node<K, V> temp = findEnd(head);
-                    temp.setNext(new Node<>(key, value));
-                }
-            }
-        }
-
-        /**
-         * Finds the last node in the linked list.
-         *
-         * @param node the starting node
-         * @return the last node in the linked list
-         */
-        private Node<K, V> findEnd(Node<K, V> node) {
-            while (node.getNext() != null) {
-                node = node.getNext();
-            }
-            return node;
-        }
-
-        /**
-         * Finds the node associated with the specified key in the linked list.
-         *
-         * @param key the key to search for
-         * @return the node associated with the specified key, or null if not found
-         */
-        public Node<K, V> findKey(K key) {
-            Node<K, V> temp = head;
-            while (temp != null) {
-                if ((key == null && temp.getKey() == null) || (temp.getKey() != null && temp.getKey().equals(key))) {
-                    return temp;
-                }
-                temp = temp.getNext();
-            }
-            return null;
-        }
-
-        /**
-         * Deletes the node associated with the specified key from the linked list.
-         * Handles the case where the key could be null.
-         *
-         * @param key the key whose associated node is to be deleted
-         */
-        public void delete(K key) {
-            if (isEmpty()) {
-                return;
-            }
-
-            // Handle the case where the head node has the key to delete
-            if ((key == null && head.getKey() == null) || (head.getKey() != null && head.getKey().equals(key))) {
-                head = head.getNext();
-                return;
-            }
-
-            // Traverse the list to find and delete the node
-            Node<K, V> current = head;
-            while (current.getNext() != null) {
-                if ((key == null && current.getNext().getKey() == null) || (current.getNext().getKey() != null && current.getNext().getKey().equals(key))) {
-                    current.setNext(current.getNext().getNext());
-                    return;
-                }
-                current = current.getNext();
-            }
-        }
-
-        /**
-         * Displays the contents of the linked list as a string.
-         *
-         * @return a string representation of the linked list
-         */
-        public String display() {
-            return display(head);
-        }
-
-        /**
-         * Constructs a string representation of the linked list non-recursively.
-         *
-         * @param node the starting node
-         * @return a string representation of the linked list starting from the given node
-         */
-        private String display(Node<K, V> node) {
-            StringBuilder sb = new StringBuilder();
-            while (node != null) {
-                sb.append(node.getKey()).append("=").append(node.getValue());
-                node = node.getNext();
-                if (node != null) {
-                    sb.append(" -> ");
-                }
-            }
-            return sb.toString().isEmpty() ? "null" : sb.toString();
-        }
-
-        /**
-         * Checks if the linked list is empty.
-         *
-         * @return true if the linked list is empty, false otherwise
-         */
-        public boolean isEmpty() {
-            return head == null;
-        }
-    }
-
-    /**
-     * A nested static class representing a node in the linked list.
-     *
-     * @param <K> the type of key maintained by this node
-     * @param <V> the type of value maintained by this node
-     */
-    public static class Node<K, V> {
-        private final K key;
-        private V value;
-        private Node<K, V> next;
-
-        /**
-         * Constructs a Node with the specified key and value.
-         *
-         * @param key   the key associated with this node
-         * @param value the value associated with this node
-         */
-        public Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        /**
-         * Gets the key associated with this node.
-         *
-         * @return the key associated with this node
-         */
-        public K getKey() {
-            return key;
-        }
-
-        /**
-         * Gets the value associated with this node.
-         *
-         * @return the value associated with this node
-         */
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) { // This method allows updating the value
-            this.value = value;
-        }
-
-        /**
-         * Gets the next node in the linked list.
-         *
-         * @return the next node in the linked list
-         */
-        public Node<K, V> getNext() {
-            return next;
-        }
-
-        /**
-         * Sets the next node in the linked list.
-         *
-         * @param next the next node to be linked
-         */
-        public void setNext(Node<K, V> next) {
-            this.next = next;
-        }
+        return true;
     }
 }
