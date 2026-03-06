@@ -34,7 +34,7 @@ def gera_frases(tam_frases):
 
         arquivo = f"frases_{tam_atual}_palavras.csv"
 
-        with open(arquivo, "w", newline="", encoding="utf-8") as arq_csv:
+        with open(DATA_DIR/"sentences"/arquivo, "w", newline="", encoding="utf-8") as arq_csv:
             writer = csv.writer(arq_csv, delimiter=",")
             writer.writerow(["frase", "qtd_bad_words"])
             for _ in range(QUANT_FRASES_DEFAULT):
@@ -48,11 +48,6 @@ def gera_frases(tam_frases):
                         conta_bad_words += 1
 
                 writer.writerow([frase_atual.strip(), conta_bad_words])
-        
-        shutil.move(ROOT_DIR/arquivo, DATA_DIR/"sentences"/arquivo)
-
-    with open(ROOT_DIR/".gitignore", "a", encoding="utf-8") as git_ignore_file:    
-        git_ignore_file.write("\ndata/sentences/")
 
 def stretcher(palavra):
     out = ""
