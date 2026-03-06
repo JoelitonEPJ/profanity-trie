@@ -31,7 +31,7 @@ def save_bad_words():
         content = input.read()
 
     cleaned = clean_wordlist(content)
-    with open(BAD_WORDS_DIR/"formatted2.txt", "w") as output:
+    with open(BAD_WORDS_DIR/"formatted.txt", "w") as output:
         for word in cleaned:
             output.write(f"{word}\n")
 
@@ -76,7 +76,7 @@ def save_good_words():
         bad_words = set(bw_filepath.read().split())
 
     good_words = words - bad_words
-    with open(GOOD_WORDS_DIR/"formatted2.txt", "w") as output:
+    with open(GOOD_WORDS_DIR/"formatted.txt", "w") as output:
         for good_word in sorted(good_words):
             output.write(f"{good_word}\n")
 

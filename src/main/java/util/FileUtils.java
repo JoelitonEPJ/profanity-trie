@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class FileUtils {
@@ -48,9 +49,9 @@ public class FileUtils {
         return readFile(GOOD_WORDS_FILE);
     }
 
-    public static Map<Character, Character[]> readCsv(String caminho){
+    public static Map<Character, String[]> readCsvCharToLeetMap(String caminho){
 
-        Map<Character, Character[]> dicionario = new HashMap<>();
+        Map<Character, String[]> dicionario = new HashMap<>();
 
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(caminho))){
             String linha;
@@ -61,13 +62,15 @@ public class FileUtils {
                 String[] colunas = linha.split(",");
                 Character chave = colunas[0].charAt(0);
                 String[] valores = colunas[1].split(" ");
-                Character[] valoresChar = new Character[valores.length];
 
-                for(int i = 0; i < valores.length; i++){
-                    valoresChar[i] = valores[i].charAt(0);
+                String[] value;
+                if(colunas.length >= 3){
+                    value = Arrays.copyOf(valores, valores.length + 1);
+                    value[value.length - 1] = colunas[2];
+                } else {
+                    value = Arrays.copyOf(valores, valores.length);
                 }
-
-                dicionario.put(chave, valoresChar);
+                dicionario.put(chave, value);
             }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
@@ -77,7 +80,47 @@ public class FileUtils {
         return dicionario;
     }
 
-    public static Map<Character, Character[]> readLeetCodes() {
-        return readCsv(LEET_CODES);
+    public static Map<Character, char[]> readCsvLeetToCharMap(String caminho){
+    
+        Map<Character, char[]> dicionario = new HashMap<>();
+
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(caminho))){
+            String linha;
+            while(true){
+                linha = bufferedReader.readLine();
+                if(linha == null) break;
+
+                String[] colunas = linha.split(",");
+                String[] leets = colunas[1].split(" ");
+
+                for(String caractere: leets){
+
+                    Character chave = caractere.charAt(0);
+                    char[] value;
+
+                    if(colunas.length >= 3){
+                        value = new char[2];
+                        value[0] = colunas[0].charAt(0);
+                        value[1] = colunas[2].charAt(0);
+                    } else {
+                        value = new char[]{colunas[0].charAt(0)};
+                    }
+                    dicionario.put(chave, value);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            return null;
+        }
+
+        return dicionario;
+    }
+
+    public static Map<Character, String[]> charToLeetMap() {
+        return readCsvCharToLeetMap(LEET_CODES);
+    }
+
+    public static Map<Character, char[]> leetToCharMap(){
+        return readCsvLeetToCharMap(LEET_CODES);
     }
 }
