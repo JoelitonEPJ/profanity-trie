@@ -37,8 +37,7 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
   - [Word List for speech recognition subtitling](https://github.com/sayonari/goodBadWordlist/blob/main/pt/BadList.txt)
 
 - pesquisa por possíveis codificações simples para letras:
-  - [Alfabeto Grego](https://pt.wikipedia.org/wiki/Alfabeto_grego)
-  - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
+    - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
 
 
 ### 4. Geração das cargas de teste (entrada)
