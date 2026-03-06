@@ -24,7 +24,9 @@ data/*_words/formatted.txt
 
 # IDEs
 .vscode
+*.iml
 .idea
 
-# gradle
-build/
+# maven
+target/
+*.log
