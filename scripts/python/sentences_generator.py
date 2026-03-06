@@ -106,6 +106,7 @@ def leetcsv_to_dict():
 
     return dict
 
-
+# rode dessa maneira: python sentences_generator.py <numero de palavras desejado das frases>
+# ex: python sentences_generator.py 100 200 300
 if __name__ == "__main__":
     gera_frases([int(v) for v in argv[1:]])
