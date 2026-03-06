@@ -64,7 +64,7 @@ def remove_words_by_prefix(content):
 def save_good_words():
     bw_filepath = BAD_WORDS_DIR/"formatted.txt"
 
-    with open(GOOD_WORDS_DIR/"unformatted.txt") as input:
+    with open(GOOD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as input:
         content = input.read()
 
     words = remove_words_by_prefix(content)

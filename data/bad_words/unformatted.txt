@@ -323,6 +323,7 @@ cuzao
 cuzão
 cuzuda
 cuzudo
+cz
 debil
 débil
 debiloide
@@ -771,7 +772,6 @@ busseta
 caceta
 cacete
 cachorra
-cachorro
 cadeia
 cadela
 cafagestagem
