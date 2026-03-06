@@ -18,7 +18,7 @@ public class Regex {
     }
 
     public void setPattern(String pattern) {
-        this.pattern = Pattern.compile(pattern);
+        this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
     }
 
     public Matcher matcher(String entrada) {
