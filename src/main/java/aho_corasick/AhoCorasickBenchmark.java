@@ -18,9 +18,9 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
                 
 @State(Scope.Thread)
-@Fork(value = 1)
-@Warmup(iterations = 1, time = 1)
-@Measurement(iterations = 1, time = 1)
+@Fork(value = 5)
+@Warmup(iterations = 5, time = 5)
+@Measurement(iterations = 10, time = 5)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 
