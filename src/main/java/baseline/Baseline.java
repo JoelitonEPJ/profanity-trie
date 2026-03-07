@@ -7,11 +7,9 @@ import util.FileUtils;
 public class Baseline {
     
     private String[] badWords;
-    private String frase;
 
-    public Baseline(String frase){
-        this.frase = frase;
-        this.badWords = FileUtils.readBadWords();
+    public Baseline(String[] badWords){
+        this.badWords = badWords;
     }
 
     public boolean isBadWord(String palavra){
@@ -22,9 +20,9 @@ public class Baseline {
         return false;
     }
 
-    public ArrayList<Integer> hasBadWord() {
+    public ArrayList<Integer> hasBadWord(String frase) {
         ArrayList<Integer> posicaoBadWords = new ArrayList<>();
-        String[] entrada = this.frase.split(" ");
+        String[] entrada = frase.split(" ");
 
         for(int i = 0; i < entrada.length; i++){
             if(isBadWord(entrada[i])){
