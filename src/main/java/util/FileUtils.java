@@ -49,40 +49,6 @@ public class FileUtils {
         return readFile(GOOD_WORDS_FILE);
     }
 
-    // public static Map<Character, String[]> readCsvCharToLeetMap(String caminho){
-
-    //     Map<Character, String[]> dicionario = new HashMap<>();
-
-    //     try(BufferedReader bufferedReader = new BufferedReader(new FileReader(caminho))){
-
-    //         bufferedReader.readLine(); // pula o cabeçalho
-
-    //         String linha;
-    //         while(true){
-    //             linha = bufferedReader.readLine();
-    //             if(linha == null) break;
-
-    //             String[] colunas = linha.split(",");
-    //             Character chave = colunas[0].charAt(0);
-    //             String[] valores = colunas[1].split(" ");
-
-    //             String[] value;
-    //             if(colunas.length >= 3){
-    //                 value = Arrays.copyOf(valores, valores.length + 1);
-    //                 value[value.length - 1] = colunas[2];
-    //             } else {
-    //                 value = Arrays.copyOf(valores, valores.length);
-    //             }
-    //             dicionario.put(chave, value);
-    //         }
-    //     } catch (IOException e) {
-    //         System.err.println("Erro ao ler o arquivo: " + e.getMessage());
-    //         return null;
-    //     }
-
-    //     return dicionario;
-    // }
-
     public static Map<Character, String[]> readCsvCharToLeetMap(){
 
         String[] linhas = readFile(LEET_CODES);
@@ -108,51 +74,12 @@ public class FileUtils {
         return dicionario;
     }
 
-    // public static Map<Character, char[]> readCsvLeetToCharMap(String caminho){
-    
-    //     Map<Character, char[]> dicionario = new HashMap<>();
-
-    //     try(BufferedReader bufferedReader = new BufferedReader(new FileReader(caminho))){
-            
-    //         bufferedReader.readLine(); // pula o cabeçalho
-
-    //         String linha;
-    //         while(true){
-    //             linha = bufferedReader.readLine();
-    //             if(linha == null) break;
-
-    //             String[] colunas = linha.split(",");
-    //             String[] leets = colunas[1].split(" ");
-
-    //             for(String caractere: leets){
-
-    //                 Character chave = caractere.charAt(0);
-    //                 char[] value;
-
-    //                 if(colunas.length >= 3){
-    //                     value = new char[2];
-    //                     value[0] = colunas[0].charAt(0);
-    //                     value[1] = colunas[2].charAt(0);
-    //                 } else {
-    //                     value = new char[]{colunas[0].charAt(0)};
-    //                 }
-    //                 dicionario.put(chave, value);
-    //             }
-    //         }
-    //     } catch (IOException e) {
-    //         System.err.println("Erro ao ler o arquivo: " + e.getMessage());
-    //         return null;
-    //     }
-
-    //     return dicionario;
-    // }
-
-    public static Map<Character, char[]> readCsvLeetToCharMap(){ 
+    public static Map<Character, ArrayList<Character>> readCsvLeetToCharMap(){ 
 
         String[] linhas = readFile(LEET_CODES);
-        Map<Character, char[]> dicionario = new HashMap<>();
+        Map<Character, ArrayList<Character>> dicionario = new HashMap<>();
 
-        char[] value;
+        ArrayList<Character> value;
         for(int i = 1; i < linhas.length; i++){
             String[] colunas = linhas[i].split(",");
 
@@ -160,15 +87,17 @@ public class FileUtils {
 
             for(int j = 0; j < chaves.length; j++){
                 Character chave = chaves[j].charAt(0);
-                if(colunas.length == 3){
-                    value = new char[2];
-                    value[0] = colunas[0].charAt(0);
-                    value[1] = colunas[2].charAt(0);
-                } else {
-                    value = new char[]{colunas[0].charAt(0)};
-                }
+                
+                dicionario.putIfAbsent(chave, new ArrayList<Character>());
 
-                dicionario.put(chave, value);
+                ArrayList<Character> caracteres = dicionario.get(chave);
+                
+                if(!caracteres.contains(colunas[0].charAt(0)))
+                    caracteres.add(colunas[0].charAt(0));
+
+                if(colunas.length == 3)
+                    if(!caracteres.contains(colunas[2].charAt(0)))
+                        caracteres.add(colunas[2].charAt(0));
             }
         }
 

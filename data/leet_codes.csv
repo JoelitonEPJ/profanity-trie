@@ -1,7 +1,7 @@
 char,leet,letter
 a,a 4 ã á à â ä @ Α α
 b,b β 8 Β
-c,c ç ¢
+c,c ç ¢,k
 d,d
 e,e 3 & ẽ é è ê ë
 f,f
@@ -9,9 +9,9 @@ g,g 6 9 ǵ
 h,h # Η
 i,i 1 ! | ĩ í ì î ï,l
 j,j ;
-k,k Κ κ ḱ 
+k,k Κ κ ḱ,c
 l,l 1 7 ! |,i
-m,m Μ ḿ 
+m,m Μ ḿ
 n,n η Ν ń ǹ
 o,o õ ó ò ô ö 0
 p,p ṕ
