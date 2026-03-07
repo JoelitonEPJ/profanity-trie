@@ -19,8 +19,6 @@
 *.tar.gz
 *.rar
 
-# Arquivos gerados, serão readicionados ao final
-data/*_words/formatted.txt
 
 # IDEs
 .vscode
@@ -29,4 +27,7 @@ data/*_words/formatted.txt
 
 # maven
 target/
-*.log
+
+# Arquivos gerados, serão readicionados ao final
+data/*_words/formatted.txt
+data/sentences
