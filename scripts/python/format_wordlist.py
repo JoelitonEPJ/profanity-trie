@@ -72,8 +72,8 @@ def save_good_words():
     if not isfile(bw_filepath):
         save_bad_words()
 
-    with open(bw_filepath) as bw_filepath:
-        bad_words = set(bw_filepath.read().split())
+    with open(bw_filepath) as bw_file:
+        bad_words = set(bw_file.read().split())
 
     good_words = words - bad_words
     with open(GOOD_WORDS_DIR/"formatted.txt", "w") as output:
