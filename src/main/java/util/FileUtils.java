@@ -79,25 +79,26 @@ public class FileUtils {
         String[] linhas = readFile(LEET_CODES);
         Map<Character, ArrayList<Character>> dicionario = new HashMap<>();
 
-        ArrayList<Character> value;
         for(int i = 1; i < linhas.length; i++){
             String[] colunas = linhas[i].split(",");
 
-            String[] chaves = colunas[1].split(" ");
+            String[] chaves;
+            if(colunas.length == 3){
+                chaves = Arrays.copyOf(colunas[1].split(" "), colunas[1].split(" ").length + 1);
+                chaves[chaves.length - 1] = colunas[2];
+            } else {
+                chaves = colunas[1].split(" ");
+            }
 
             for(int j = 0; j < chaves.length; j++){
                 Character chave = chaves[j].charAt(0);
                 
                 dicionario.putIfAbsent(chave, new ArrayList<Character>());
 
-                ArrayList<Character> caracteres = dicionario.get(chave);
+                ArrayList<Character> value = dicionario.get(chave);
                 
-                if(!caracteres.contains(colunas[0].charAt(0)))
-                    caracteres.add(colunas[0].charAt(0));
-
-                if(colunas.length == 3)
-                    if(!caracteres.contains(colunas[2].charAt(0)))
-                        caracteres.add(colunas[2].charAt(0));
+                if(!value.contains(colunas[0].charAt(0)))
+                    value.add(colunas[0].charAt(0));
             }
         }
 
