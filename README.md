@@ -14,5 +14,4 @@ Implementação, documentação e comparação da Trie e outros métodos na filt
 
 ## Referências de Códigos L33T
 
-- [Alfabeto Grego](https://pt.wikipedia.org/wiki/Alfabeto_grego)
 - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
