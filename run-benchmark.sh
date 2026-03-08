@@ -69,28 +69,28 @@ mvn clean package
 
 # performance de inserção
 if [[ $run_comp == insert ]] || [ -n "$run_all" ]; then
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -rf csv -rff $results_dir/insertion_perf.csv
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -rf csv -rff $results_dir/insertion_perf.csv -p currentTest=insert
 fi
 
 # consumo de memória 
 if [[ $run_comp == memory ]] || [ -n "$run_all" ]; then
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -prof gc -rf csv -rff $results_dir/memory_usage.csv
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -prof gc -rf csv -rff $results_dir/memory_usage.csv currentTest=memory
 fi
 
 # velocidade de busca em frases e detecção
 if [[ $run_comp == phrases ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/search_phrases_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correctly Identified\",\"Missed\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
+        echo "\"Benchmark\",\"Correctly Identified\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
     fi
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p phraseCount=1000,5000,10000 -p record=phrases
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000,5000,10000
 fi
 
 # velocidade de busca em palavras e detecção
 if [[ $run_comp == words ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/query_words_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correct Count\",\"Category\"" > $results_dir/query_words_efficiency.csv
+        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Category\"" > $results_dir/query_words_efficiency.csv
     fi
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.queryWords" -rf csv -rff $results_dir/query_words_perf.csv -p record=words
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.queryWords" -rf csv -rff $results_dir/query_words_perf.csv -p currentTest=words
 fi
 
 # TODO: gerar gráficos, fazer após já ter os benchmarks configurados

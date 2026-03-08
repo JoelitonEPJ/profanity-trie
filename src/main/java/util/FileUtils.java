@@ -140,22 +140,44 @@ public class FileUtils {
         final String filePath = Paths.get(RESULTS_DIR, "query_words_efficiency.csv").toString();
 
         String lineToSave = className + "," + correctAmount + "," + phraseSize;
-        String[] linhas = readFile(filePath);
+        List<String> linhas = Arrays.asList(readFile(filePath));
 
-        boolean hasLinha = false;
-        for (int i = 1; i < linhas.length; i++) {
-            if (linhas[i].startsWith(className) && linhas[i].endsWith("," + phraseSize)) {
-                linhas[i] = lineToSave;
-                hasLinha = true;
-                break;
+        for (int i = 1; i < linhas.size(); i++) {
+            if (linhas.get(i).startsWith(className) && linhas.get(i).endsWith("," + phraseSize)) {
+                linhas.set(i, lineToSave);
+
+                saveFileContent(filePath, linhas);
+                return;
             }
         }
 
-        if (!hasLinha) {
-            linhas = Arrays.copyOf(linhas, linhas.length + 1);
-            linhas[linhas.length - 1] = lineToSave;
+        linhas.add(lineToSave);
+        saveFileContent(filePath, linhas);
+    }
+
+    /**
+     * Saves (overriding, if necessary) the results of the new searchPhrases run.
+     * 
+     * @param className      name of the class to be recorded
+     * @param correctAmount  how many bad_words_count were correct
+     * @param phraseSize     the phrase size used for this comparison
+     */
+    public static void saveWordsResult(String className, int correct, int missed, String category) {
+        final String filePath = Paths.get(RESULTS_DIR, "query_words_efficiency.csv").toString();
+
+        String lineToSave = className + "," + correct + "," + missed + "," + category;
+        List<String> linhas = Arrays.asList(readFile(filePath));
+
+        for (int i = 1; i < linhas.size(); i++) {
+            if (linhas.get(i).startsWith(className) && linhas.get(i).endsWith(category)) {
+                linhas.set(i, lineToSave);
+
+                saveFileContent(filePath, linhas);
+                return;
+            }
         }
 
+        linhas.add(lineToSave);
         saveFileContent(filePath, linhas);
     }
 
@@ -165,12 +187,11 @@ public class FileUtils {
      * @param caminho  path to the file
      * @param linhas   content to be saved on this file
      */
-    public static void saveFileContent(String caminho, String[] linhas) {
+    public static void saveFileContent(String caminho, List<String> linhas) {
         try {
-            List<String> conteudo = Arrays.asList(linhas);
             Path caminhoArquivo = Paths.get(caminho);
 
-            Files.write(caminhoArquivo, conteudo, StandardCharsets.UTF_8);
+            Files.write(caminhoArquivo, linhas, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.err.println("Erro ao salvar o arquivo: " + caminho);
             System.exit(1);
