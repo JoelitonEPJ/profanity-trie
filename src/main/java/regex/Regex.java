@@ -18,7 +18,7 @@ public class Regex {
     }
 
     public void setPattern(String pattern) {
-        this.pattern = Pattern.compile(pattern);
+        this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
     }
 
     public Matcher matcher(String entrada) {
@@ -52,7 +52,7 @@ public class Regex {
                 ultimoChar = charAtual;
             }
 
-            if (!pattern.isEmpty()) pattern.append("|");
+            if (!(pattern.length() == 0)) pattern.append("|");
             pattern.append(padrao); 
         }
 

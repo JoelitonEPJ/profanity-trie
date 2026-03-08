@@ -27,11 +27,11 @@ def clean_wordlist(content):
 
 
 def save_bad_words():
-    with open(BAD_WORDS_DIR/"unformatted.txt", "r") as input:
+    with open(BAD_WORDS_DIR/"unformatted.txt", "r", encoding="utf-8") as input:
         content = input.read()
 
     cleaned = clean_wordlist(content)
-    with open(BAD_WORDS_DIR/"formatted.txt", "w") as output:
+    with open(BAD_WORDS_DIR/"formatted.txt", "w", encoding="utf-8") as output:
         for word in cleaned:
             output.write(f"{word}\n")
 
