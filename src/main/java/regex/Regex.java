@@ -52,7 +52,7 @@ public class Regex {
                 ultimoChar = charAtual;
             }
 
-            if (!pattern.isEmpty()) pattern.append("|");
+            if (!(pattern.length() == 0)) pattern.append("|");
             pattern.append(padrao); 
         }
 
