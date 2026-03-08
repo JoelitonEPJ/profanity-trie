@@ -28,6 +28,6 @@
 # maven
 target/
 
-# Arquivos gerados, serão readicionados ao final
-data/*_words/formatted.txt
+# Arquivos/diretórios gerados
+data/*_words/formatted.*
 data/sentences

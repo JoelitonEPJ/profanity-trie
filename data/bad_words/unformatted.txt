@@ -1,5 +1,4 @@
 merda
-merdas
 caralho
 porra
 foda
@@ -22,7 +21,6 @@ violência
 terrorismo
 cocaína
 heroína
-álcool
 prostituta
 prostituto
 pornô
@@ -70,6 +68,7 @@ buceta
 bugre
 bunda
 bunduda
+bundudo
 burra
 burro
 bussanga
@@ -79,7 +78,7 @@ cacete
 cachorra
 cachorro
 cadela
-caga
+arrombados
 cagado
 cagona
 cagão
@@ -232,7 +231,6 @@ baianada
 baitola
 bárbaro
 barbeiro
-barraco
 beata
 bêbado
 bêbedo
@@ -628,7 +626,6 @@ Desmiolada
 Desmiolado
 Desmiolamento
 Diabo
-Esclarecer
 Escravo
 Escrota
 Escroto
@@ -714,6 +711,8 @@ aleijada
 aleijado
 analfabeta
 analfabeto
+abestalhada
+abestalhado
 anus
 anão
 anões
@@ -738,7 +737,6 @@ besta
 bicha
 bisca
 bixa
-bla
 boazuda
 boceta
 boco
@@ -766,13 +764,13 @@ bunda
 bunduda
 bundão
 burra
+burrada
 burro
 burros
 busseta
 caceta
 cacete
 cachorra
-cadeia
 cadela
 cafagestagem
 cafajeste
@@ -859,7 +857,6 @@ desgraçado
 desgraçados
 detento
 difunto
-dinheiro
 disgraça
 doida
 doideira
@@ -869,8 +866,6 @@ egua
 elemento
 encostado
 enganacao
-enganado
-enganar
 enganaçao
 enganação
 enganosa
@@ -1007,13 +1002,9 @@ marginal
 masturba
 meleca
 meliante
-mentir
-mentira
-mentiras
 mentirosa
 mentiroso
 mentirosos
-mercadoeia
 merda
 mija
 mijada
@@ -1031,7 +1022,6 @@ mongol
 mongoloide
 mulata
 mulato
-médico
 naba
 nadega
 nazista
@@ -1172,11 +1162,16 @@ vagabundo
 vagabundos
 vagal
 vagina
+vaginal
+vaginais
 veada
 veadao
+vadiada
+vadiado
+vadiagem
+vadiagens
 veado
 veadão
-vergonha
 viada
 viadagem
 viadao
@@ -1210,16 +1205,16 @@ burro
 cacete
 cagar
 caralho
-cerveja
 chochota
-chupar
 clitoris
+demoniomaniaca
+demoniomaniaco
 cocaína
 coito
-comer
 consolo
 corno
 cu
+cus
 esporra
 fecal
 foda
@@ -1300,7 +1295,6 @@ custozinha
 cuzao
 cuzinho
 cuzinhos
-elegancia
 encantada
 encoxada
 engole-espada
@@ -1321,12 +1315,14 @@ mede-rola
 megasex
 mela-pentelho
 meleca
+melecas
+melecada
+melecado
 melequinha
 menage
 menages
 merdao
 meretriz
-mesma
 metendo
 mijada
 otario
@@ -1479,7 +1475,6 @@ Demente
 Desciclope
 Desgracado
 Drogado
-EGUENORANTE
 Endemoniado
 Energumeno
 Enfianocu
@@ -1575,6 +1570,9 @@ Raspadinha
 Retardado
 Rusguento
 Sanguesuga
+sugador
+sugadora
+sugadão
 Sujo
 Tapado
 Tarado
@@ -1635,7 +1633,6 @@ bagos
 baianada
 baitola
 barbeiro
-barraco
 beata
 bebum
 besta
@@ -1668,6 +1665,8 @@ burra
 burro
 busseta
 bárbaro
+semibárbaro
+boboca
 bêbado
 bêbedo
 caceta
@@ -1676,6 +1675,7 @@ cachorra
 cachorro
 cadela
 caga
+cagada
 cagado
 cagao
 cagão
@@ -1841,7 +1841,13 @@ malandro
 maluco
 maneta
 marginal
+marginais
 masturba
+masturbada
+masturbado
+masturbador
+masturbação
+masturbações
 meleca
 meliante
 merda
@@ -2023,7 +2029,6 @@ bagos
 baianada
 baitola
 barbeiro
-barraco
 beata
 bebum
 besta
@@ -2436,7 +2441,6 @@ Desmiolada
 Desmiolado
 Desmiolamento
 Diabo
-Esclarecer
 Escravidão
 Escravo
 Escrota
@@ -2534,7 +2538,6 @@ bacura
 bagos
 baianada
 baitola
-barraco
 beata
 bebum
 besta
@@ -2575,7 +2578,6 @@ caceta
 cacete
 cachorra
 cachorro
-cadeia
 cadela
 cafagestagem
 cafajeste
@@ -2613,6 +2615,7 @@ chochota
 chota
 chupada
 chupado
+cigano
 ciganos
 clitoris
 clitóris
@@ -2668,7 +2671,6 @@ desgraçado
 desgraçados
 detento
 difunto
-dinheiro
 desgraça
 doida
 doideira
@@ -2678,8 +2680,6 @@ egua
 elemento
 encostado
 enganacao
-enganado
-enganar
 enganação
 enganação
 enganosa
@@ -2825,13 +2825,10 @@ marginal
 masturba
 meleca
 meliante
-mentir
-mentira
-mentiras
 mentirosa
+mentirosas
 mentiroso
 mentirosos
-mercadoeia
 merda
 mija
 mijada
@@ -2849,7 +2846,6 @@ mongol
 mongoloide
 mulata
 mulato
-médico
 naba
 nadega
 nazista
@@ -2893,11 +2889,11 @@ pilantras
 pinel
 pinto
 pintudo
-piramide
 piranha
 piroca
 piroco
-piroduco
+mcc
+pirocudo
 piru
 pivete
 pnc
@@ -2986,6 +2982,7 @@ tezões
 traveco
 trocha
 trolha
+chupão
 troucha
 trouchas
 trouxa
@@ -3006,10 +3003,6 @@ veada
 veadao
 veado
 veadão
-vendendo
-vender
-vendo
-vergonha
 viada
 viadagem
 viadao
@@ -3141,6 +3134,9 @@ autistinha
 baleia
 vadia
 vadiona
+vadiazona
+vadiazinha
+merdeiro
 vagabunda
 piranha
 bisca
@@ -3198,3 +3194,7 @@ lança-perfume
 traficante
 conguito
 randola
+sugada
+sugado
+chupadinha
+chupadinha
