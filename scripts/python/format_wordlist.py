@@ -30,6 +30,7 @@ def clean_wordlist(content, ordered=True):
 
 
 def assured_bad_word_prefix(good_words, bad_words):
+    print("info: Calculating the first assured bad word prefix...")
     first_prefix_bad_word = {}
 
     for bad_word in bad_words:
@@ -45,27 +46,34 @@ def assured_bad_word_prefix(good_words, bad_words):
 
 
 def save_bad_words():
-    gw_filepath = GOOD_WORDS_DIR/"formatted.txt"
+    unf_filepath = BAD_WORDS_DIR/"unformatted.txt"
+    gw_filepath  = GOOD_WORDS_DIR/"formatted.txt"
+    bw_filepath  = BAD_WORDS_DIR/"formatted.csv"
 
-    with open(BAD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as input:
+    print(f"info: Generating file `{bw_filepath}` from `{unf_filepath}`...")
+    with open(unf_filepath, encoding="utf-8") as input:
         bad_words = clean_wordlist(input.read())
 
     if not isfile(gw_filepath):
+        print(f"info: File `{gw_filepath}` does not exist, creating...")
         save_good_words()
 
     with open(gw_filepath, encoding="utf-8") as gw_file:
         good_words = set(good_word for good_word in gw_file.read().split())
 
     bad_word_by_prefix = assured_bad_word_prefix(good_words, bad_words)
-    with open(BAD_WORDS_DIR/"formatted.csv", "w", encoding="utf-8") as output:
+    with open(bw_filepath, "w", encoding="utf-8") as output:
         out_writer = writer(output, delimiter=",")
         out_writer.writerow(["word", "first_idx"])
 
         for word, first_idx in bad_word_by_prefix.items():
             out_writer.writerow([word, first_idx])
 
+    print(f"info: File `{bw_filepath}` saved!")
+
 
 def remove_words_by_prefix(content):
+    print("info: Filtering out good words by its prefixes...")
     cleaned = clean_wordlist(content)
 
     seen  = []
@@ -91,6 +99,7 @@ def remove_words_by_prefix(content):
 
 
 def remove_variations(words, bad_words):
+    print("info: Removing bad words' variations...")
     good_words = words - bad_words
 
     for bad_word in bad_words:
@@ -105,12 +114,15 @@ def remove_variations(words, bad_words):
             good_words.discard(bad_word[:-1] + 'inho')
             good_words.discard(bad_word[:-1] + 'ao')
 
-    
     return good_words
 
 
 def save_good_words():
-    with open(GOOD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as input:
+    unf_filepath = GOOD_WORDS_DIR/"unformatted.txt"
+    gw_filepath  = GOOD_WORDS_DIR/"formatted.txt"
+
+    print(f"info: Generating file `{gw_filepath}` from `{unf_filepath}`...")
+    with open(unf_filepath, encoding="utf-8") as input:
         content = input.read()
 
     words = remove_words_by_prefix(content)
@@ -119,9 +131,11 @@ def save_good_words():
         bad_words = clean_wordlist(bw_file.read(), ordered=False)
 
     good_words = remove_variations(words, bad_words)
-    with open(GOOD_WORDS_DIR/"formatted.txt", "w", encoding="utf-8") as output:
+    with open(gw_filepath, "w", encoding="utf-8") as output:
         for good_word in sorted(good_words):
             output.write(f"{good_word}\n")
+
+    print(f"info: File `{gw_filepath}` saved!")
 
 
 # rode da seguinte maneira: python format_wordlist.py [good bad]
