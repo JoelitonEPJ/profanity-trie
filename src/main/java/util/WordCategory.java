@@ -18,4 +18,4 @@ public enum WordCategory {
 
         return categoryCount;
     }
-    }
+}

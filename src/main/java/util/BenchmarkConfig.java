@@ -43,7 +43,9 @@ abstract public class BenchmarkConfig {
     private Map<WordCategory, Integer> categoryCountMap;
 
     public abstract void addWords(String[] words);
+
     public abstract int countBadWords(String phrase);
+
     public abstract boolean checkIsBadWord(String word);
 
     @Setup(Level.Trial)
@@ -74,7 +76,9 @@ abstract public class BenchmarkConfig {
             WordCategory category = wordsOfCategory.getKey();
 
             for (String word : wordsOfCategory.getValue()) {
-                if (checkIsBadWord(word)) categoryCountMap.put(category, categoryCountMap.get(category) + 1);
+                if (checkIsBadWord(word)) {
+                    categoryCountMap.put(category, categoryCountMap.get(category) + 1);
+                }
             }
         }
     }
@@ -94,7 +98,7 @@ abstract public class BenchmarkConfig {
             FileUtils.savePhrasesResult(getClass().getName(), correctAmount, phraseSize);
         } else if (currentTest.equals("words")) {
             for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
-                int total  = categorizedWords.get(entry.getKey()).size();
+                int total = categorizedWords.get(entry.getKey()).size();
                 int missed = entry.getValue() - total;
 
                 FileUtils.saveWordsResult(getClass().getName(), entry.getValue(), missed, entry.getKey().name());

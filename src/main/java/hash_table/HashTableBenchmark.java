@@ -3,6 +3,7 @@ package hash_table;
 import util.BenchmarkConfig;
 
 public class HashTableBenchmark extends BenchmarkConfig {
+
     private HashTable benchmarkHashTable;
 
     @Override

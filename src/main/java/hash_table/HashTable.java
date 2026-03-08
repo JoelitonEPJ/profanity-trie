@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class HashTable {
+
     private final Set<String> badWords;
 
     public HashTable(String[] words) {
@@ -16,13 +17,16 @@ public class HashTable {
         String[] words = phrase.split(" ");
         int count = 0;
 
-        for (String word : words)
-            if (badWords.contains(word)) count++;
+        for (String word : words) {
+            if (badWords.contains(word)) {
+                count++;
+            }
+        }
 
         return count;
     }
 
     public boolean isBadWord(String word) {
-      return badWords.contains(word);
+        return badWords.contains(word);
     }
 }
