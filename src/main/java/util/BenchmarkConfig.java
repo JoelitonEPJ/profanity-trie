@@ -1,6 +1,6 @@
 package util;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +18,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-                
+
 @State(Scope.Thread)
 // FIXME: alterar para os valores corretos
 @Fork(value = 1)
@@ -36,13 +36,13 @@ abstract public class BenchmarkConfig {
 
     protected String[] wordsToAdd;
 
-    protected Map<String, Integer> phrases;
+    protected Pair<String, Integer>[] phrases;
     protected int correctAmount;
 
-    private Map<String, Category> categorizedWords;
-    private Map<Category, Integer> categoryCountMap;
+    private Map<WordCategory, List<String>> categorizedWords;
+    private Map<WordCategory, Integer> categoryCountMap;
 
-    public abstract void addWord(String word);
+    public abstract void addWords(String[] words);
     public abstract int countBadWords(String phrase);
     public abstract boolean checkIsBadWord(String word);
 
@@ -50,15 +50,13 @@ abstract public class BenchmarkConfig {
     public void setUp() {
         switch (currentTest) {
             case "phrases":
-                wordsToAdd = FileUtils.readBadWords();
-                // TODO
-                // phrases = FileUtils.readPhrases(phraseSize);
+                addWords(FileUtils.readBadWords());
+                phrases = FileUtils.readPhrases(phraseSize);
                 break;
             case "words":
-                wordsToAdd = FileUtils.readBadWords();
-                // TODO
-                // categorizedWords = FileUtils.readWords(phraseSize);
-                categoryCountMap = Category.categoryCountMap();
+                addWords(FileUtils.readBadWords());
+                categorizedWords = FileUtils.readWords();
+                categoryCountMap = WordCategory.categoryCountMap();
                 break;
             default:
                 wordsToAdd = FileUtils.readGoodWords();
@@ -67,23 +65,24 @@ abstract public class BenchmarkConfig {
 
     @Benchmark
     public void insertAll(Blackhole blackhole) {
-        for (String word : wordsToAdd) addWord(word);
+        addWords(wordsToAdd);
     }
 
     @Benchmark
     public void queryWords(Blackhole blackhole) {
-        for (Map.Entry<String, Category> word : categorizedWords.entrySet()) {
-            if (checkIsBadWord(word.getKey())) {
-                Category category = word.getValue();
-                categoryCountMap.put(category, categoryCountMap.getOrDefault(category, 0) + 1);
+        for (Map.Entry<WordCategory, List<String>> wordsOfCategory : categorizedWords.entrySet()) {
+            WordCategory category = wordsOfCategory.getKey();
+
+            for (String word : wordsOfCategory.getValue()) {
+                if (checkIsBadWord(word)) categoryCountMap.put(category, categoryCountMap.get(category) + 1);
             }
         }
     }
 
     @Benchmark
     public void searchPhrases(Blackhole blackhole) {
-        for (Map.Entry<String, Integer> phrase : phrases.entrySet()) {
-            if (countBadWords(phrase.getKey()) == phrase.getValue()) {
+        for (Pair<String, Integer> phrase : phrases) {
+            if (countBadWords(phrase.first()) == phrase.second()) {
                 correctAmount++;
             }
         }
@@ -94,32 +93,12 @@ abstract public class BenchmarkConfig {
         if (currentTest.equals("phrases")) {
             FileUtils.savePhrasesResult(getClass().getName(), correctAmount, phraseSize);
         } else if (currentTest.equals("words")) {
-            for (Map.Entry<Category, Integer> entry : categoryCountMap.entrySet()) {
-                int total = (int) categorizedWords.values().stream().filter(c -> c.equals(entry.getKey())).count();
+            for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
+                int total  = categorizedWords.get(entry.getKey()).size();
                 int missed = entry.getValue() - total;
 
                 FileUtils.saveWordsResult(getClass().getName(), entry.getValue(), missed, entry.getKey().name());
             }
         }
     }
-
-    private enum Category {
-        NORMAL,
-        HIDDEN,
-        SPACED,
-        ENCODED,
-        STRETCHED;
-
-        public Category getCategory(String category) {
-            return Enum.valueOf(Category.class, category.toUpperCase());
-        }
-
-        public static Map<Category, Integer> categoryCountMap() {
-            Map<Category, Integer> categoryCount = new HashMap<>();
-            for (Category c : Category.values()) categoryCount.put(c, 0);
-
-            return categoryCount;
-        }
-    }
 }
-

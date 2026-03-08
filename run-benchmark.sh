@@ -74,7 +74,7 @@ fi
 
 # consumo de memória 
 if [[ $run_comp == memory ]] || [ -n "$run_all" ]; then
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -prof gc -rf csv -rff $results_dir/memory_usage.csv currentTest=memory
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -prof gc -rf csv -rff $results_dir/memory_usage.csv -p currentTest=memory
 fi
 
 # velocidade de busca em frases e detecção

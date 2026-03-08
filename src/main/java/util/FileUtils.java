@@ -15,11 +15,16 @@ import java.util.Map;
 
 public class FileUtils {
 
-    private static final String RESULTS_DIR = "out/results/";
+    private static final Path SENTENCES_DIR = Paths.get("data", "sentences");
+    private static final Path RESULTS_DIR   = Paths.get("out",  "results");
 
-    private static final String BAD_WORDS_FILE = "data/bad_words/formatted.txt";
-    private static final String GOOD_WORDS_FILE = "data/good_words/formatted.txt";
-    private static final String LEET_CODES = "data/leet_codes.csv";
+    private static final Path GOOD_WORDS_FILE = Paths.get("data", "good_words", "formatted.txt");
+    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.txt");
+    private static final Path LEET_CODES_FILE = Paths.get("data", "leet_codes.csv");
+
+    public static String[] readFile(Path caminho) {
+        return readFile(caminho.toString());
+    }
 
     /**
      * Reads a text file and transforms its content into a String array
@@ -71,11 +76,11 @@ public class FileUtils {
     /**
      * Reads the csv file containing the char-leet relationship and returns its content as a HashMap
      * 
-     * @return a HashMap containing the relationship { char=>[leet] }
+     * @return a HashMap containing the relationship { char=>[leets] }
      */
     public static Map<Character, String[]> readCsvCharToLeetMap() {
 
-        String[] linhas = readFile(LEET_CODES);
+        String[] linhas = readFile(LEET_CODES_FILE);
         Map<Character, String[]> dicionario = new HashMap<>();
 
         String[] value;
@@ -99,11 +104,11 @@ public class FileUtils {
     /**
      * Reads the csv file containing the char-leet relationship and returns its content as a HashMap
      * 
-     * @return a HashMap containing the inversed relationship { leet=>[char] }
+     * @return a HashMap containing the inversed relationship { leet=>[chars] }
      */
     public static Map<Character, ArrayList<Character>> readCsvLeetToCharMap() {
 
-        String[] linhas = readFile(LEET_CODES);
+        String[] linhas = readFile(LEET_CODES_FILE);
         Map<Character, ArrayList<Character>> dicionario = new HashMap<>();
 
         for (int i = 1; i < linhas.length; i++) {
@@ -130,6 +135,46 @@ public class FileUtils {
     }
 
     /**
+     * Reads the csv file containing the phrases with the specified {@code phraseSize}
+     * 
+     * @return an array of pairs with the following structure { phrase, badWordsCount }
+     */
+    @SuppressWarnings("unchecked")
+    public static Pair<String, Integer>[] readPhrases(int phraseSize) {
+
+        String arquivo = "frases_" + phraseSize + "_palavras.csv";
+        String[] linhas = readFile(SENTENCES_DIR.resolve(arquivo));
+
+        Pair<String, Integer>[] phrases = new Pair[linhas.length - 1];
+        for (int i = 1; i < linhas.length; i++) {
+            String[] phraseBadWordCount = linhas[i].split(",");
+            phrases[i + 1] = new Pair(phraseBadWordCount[0], Integer.valueOf(phraseBadWordCount[1]));
+        }
+
+        return phrases;
+    }
+
+    /**
+     * Reads the csv file containing the words to query 
+     * 
+     * @return a HashMap with the following structure { category=>[words] }
+     */
+    public static Map<WordCategory, List<String>> readWords() {
+
+        String[] linhas = readFile(SENTENCES_DIR.resolve("words.csv"));
+        Map<WordCategory, List<String>> words = new HashMap<>();
+
+        for (int i = 1; i < linhas.length; i++) {
+            String[] categorizedWords = linhas[i].split(",");
+            WordCategory category = WordCategory.getCategory(categorizedWords[1]);
+
+            words.putIfAbsent(category, new ArrayList<>()).add(categorizedWords[0]);
+        }
+
+        return words;
+    }
+
+    /**
      * Saves (overriding, if necessary) the results of the new searchPhrases run.
      * 
      * @param className      name of the class to be recorded
@@ -137,7 +182,7 @@ public class FileUtils {
      * @param phraseSize     the phrase size used for this comparison
      */
     public static void savePhrasesResult(String className, int correctAmount, int phraseSize) {
-        final String filePath = Paths.get(RESULTS_DIR, "query_words_efficiency.csv").toString();
+        final Path filePath = RESULTS_DIR.resolve("search_phrases_efficiency.csv");
 
         String lineToSave = className + "," + correctAmount + "," + phraseSize;
         List<String> linhas = Arrays.asList(readFile(filePath));
@@ -158,12 +203,13 @@ public class FileUtils {
     /**
      * Saves (overriding, if necessary) the results of the new searchPhrases run.
      * 
-     * @param className      name of the class to be recorded
-     * @param correctAmount  how many bad_words_count were correct
-     * @param phraseSize     the phrase size used for this comparison
+     * @param className  name of the class to be recorded
+     * @param correct    how many bad words were correctly identified for this category
+     * @param missed     how many bad words were not identified for this category
+     * @param category   the category to be saved
      */
     public static void saveWordsResult(String className, int correct, int missed, String category) {
-        final String filePath = Paths.get(RESULTS_DIR, "query_words_efficiency.csv").toString();
+        final Path filePath = RESULTS_DIR.resolve("query_words_efficiency.csv");
 
         String lineToSave = className + "," + correct + "," + missed + "," + category;
         List<String> linhas = Arrays.asList(readFile(filePath));
@@ -187,11 +233,9 @@ public class FileUtils {
      * @param caminho  path to the file
      * @param linhas   content to be saved on this file
      */
-    public static void saveFileContent(String caminho, List<String> linhas) {
+    public static void saveFileContent(Path caminho, List<String> linhas) {
         try {
-            Path caminhoArquivo = Paths.get(caminho);
-
-            Files.write(caminhoArquivo, linhas, StandardCharsets.UTF_8);
+            Files.write(caminho, linhas, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.err.println("Erro ao salvar o arquivo: " + caminho);
             System.exit(1);

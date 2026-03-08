@@ -1,29 +1,22 @@
 package hash_table;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.infra.Blackhole;
-
 import util.BenchmarkConfig;
 
 public class HashTableBenchmark extends BenchmarkConfig {
-    @Setup(Level.Trial)
-    public void setUp() {
+    private HashTable benchmarkHashTable;
+
+    @Override
+    public void addWords(String[] words) {
+        benchmarkHashTable = new HashTable(words);
     }
 
     @Override
-    @Benchmark
-    public void insertAll(Blackhole blackhole) {
+    public int countBadWords(String phrase) {
+        return benchmarkHashTable.countBadWords(phrase);
     }
 
     @Override
-    @Benchmark
-    public void queryWords(Blackhole blackhole) {
-    }
-
-    @Override
-    @Benchmark
-    public void searchPhrases(Blackhole blackhole) {
+    public boolean checkIsBadWord(String word) {
+        return benchmarkHashTable.isBadWord(word);
     }
 }

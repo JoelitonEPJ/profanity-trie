@@ -1,29 +1,19 @@
 package aho_corasick;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.infra.Blackhole;
-
 import util.BenchmarkConfig;
 
 public class AhoCorasickBenchmark extends BenchmarkConfig {
-    @Setup(Level.Trial)
-    public void setUp() {
+    @Override
+    public void addWords(String[] words) {
     }
 
     @Override
-    @Benchmark
-    public void insertAll(Blackhole blackhole) {
+    public int countBadWords(String phrase) {
+        return 0;
     }
 
     @Override
-    @Benchmark
-    public void queryWords(Blackhole blackhole) {
-    }
-
-    @Override
-    @Benchmark
-    public void searchPhrases(Blackhole blackhole) {
+    public boolean checkIsBadWord(String word) {
+        return false;
     }
 }
