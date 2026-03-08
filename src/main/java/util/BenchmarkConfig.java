@@ -1,5 +1,6 @@
 package util;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -16,6 +17,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
                 
 @State(Scope.Thread)
+// FIXME: alterar para os valores corretos
 @Fork(value = 1)
 @Warmup(iterations = 1, time = 1)
 @Measurement(iterations = 1, time = 1)
@@ -24,13 +26,15 @@ import org.openjdk.jmh.infra.Blackhole;
 abstract public class BenchmarkConfig {
 
     @Param({"none"})
-    private String recordResults;
+    protected String recordResults;
 
     @Param({"-1"})
     protected int phraseSize;
 
-    // private int correctAmount;
+    protected HashMap<String, Integer> phrases;
+    protected int correctAmount;
 
+    // Benchmarks
     public abstract void insertAll(Blackhole blackhole);
     public abstract void queryWords(Blackhole blackhole);
     public abstract void searchPhrases(Blackhole blackhole);
@@ -38,9 +42,9 @@ abstract public class BenchmarkConfig {
     @TearDown(Level.Trial)
     public void recordPhraseResults() {
         if (recordResults.equals("phrases")) {
-            // salva os resultados das frases (erros/acertos)
+            FileUtils.savePhrasesResult(getClass().getName(), correctAmount, phraseSize);
         } else if (recordResults.equals("words")) {
-            // salva os resultados das palavras (erros/acertos por categoria)
+            // TODO
         }
     }
 }
