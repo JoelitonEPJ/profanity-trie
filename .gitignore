@@ -31,3 +31,4 @@ target/
 # Arquivos/diretórios gerados
 data/*_words/formatted.*
 data/sentences
+out/results
