@@ -17,13 +17,11 @@ SEED = 33550336
 def gera_frases(tam_frases):
     random.seed(SEED)
 
-    if len(tam_frases) == 0: tam_frases = TAM_FRASES_DEFAULT
-
     with open(GOOD_WORDS_DIR/"formatted.txt", "r", encoding="utf-8") as input:
         good_words = input.readlines()
 
-    with open(BAD_WORDS_DIR/"formatted.txt", "r", encoding="utf-8") as input:
-        bad_words = input.readlines()
+    with open(BAD_WORDS_DIR/"formatted.csv", "r", encoding="utf-8") as input:
+        bad_words = [linha[:linha.index(",")] for linha in input.readlines()[:1]]
 
     leet_dict = leetcsv_to_dict()
     for i in range(len(tam_frases)):
@@ -65,7 +63,8 @@ def spacer(palavra):
 def encoder(palavra, leet_dict):
     out = ""
     for letra in palavra:
-        if (is_special_character(letra)): continue
+        if (is_special_character(letra)):
+            continue
         out += random.choice(leet_dict[letra])
 
     return out
@@ -90,11 +89,12 @@ def leetcsv_to_dict():
         for linha in reader:
             if linha[0] != "char":
                 dict[linha[0]] = linha[1].split()
-                if len(linha) == 3: dict[linha[0]].append(linha[2])
+                if len(linha) == 3:
+                    dict[linha[0]].append(linha[2])
 
     return dict
 
 # rode dessa maneira: python sentences_generator.py <numero de palavras desejado das frases>
 # ex: python sentences_generator.py 100 200 300
 if __name__ == "__main__":
-    gera_frases([int(v) for v in argv[1:]])
+    gera_frases([int(v) for v in argv[1:]] or TAM_FRASES_DEFAULT)
