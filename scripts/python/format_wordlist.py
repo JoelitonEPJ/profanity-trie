@@ -34,11 +34,11 @@ def assured_bad_word_prefix(good_words, bad_words):
 
     for bad_word in bad_words:
         for i in range(len(bad_word)):
-            if all(bad_word[:i + 1] not in good_word for good_word in good_words):
+            if all(not good_word.startswith(bad_word[:i + 1]) for good_word in good_words):
                 first_prefix_bad_word[bad_word] = i
                 break
         else:
-            # será necessário ir até o fim da palavra para descobrir se é bad word
+            # só será bad word se parar no fim da palavra
             first_prefix_bad_word[bad_word] = -1
 
     return first_prefix_bad_word
@@ -90,13 +90,21 @@ def remove_words_by_prefix(content):
     return set(seen)
 
 
-def remove_similar(words, bad_words):
+def remove_variations(words, bad_words):
     good_words = words - bad_words
 
     for bad_word in bad_words:
         good_words.discard(bad_word + 'es')
         good_words.discard(bad_word + 'as')
         good_words.discard(bad_word + 's')
+
+        if bad_word.endswith('a') and not bad_word.endswith('inha') and not bad_word.endswith('ona'):
+            good_words.discard(bad_word[:-1] + 'inha')
+            good_words.discard(bad_word[:-1] + 'ona')
+        if bad_word.endswith('o') and not bad_word.endswith('inho') and not bad_word.endswith('ao'):
+            good_words.discard(bad_word[:-1] + 'inho')
+            good_words.discard(bad_word[:-1] + 'ao')
+
     
     return good_words
 
@@ -110,7 +118,7 @@ def save_good_words():
     with open(BAD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as bw_file:
         bad_words = clean_wordlist(bw_file.read(), ordered=False)
 
-    good_words = remove_similar(words, bad_words)
+    good_words = remove_variations(words, bad_words)
     with open(GOOD_WORDS_DIR/"formatted.txt", "w", encoding="utf-8") as output:
         for good_word in sorted(good_words):
             output.write(f"{good_word}\n")
@@ -120,7 +128,7 @@ def save_good_words():
 if __name__ == "__main__":
     save_option = argv[1] if len(argv) > 1 else "all"
 
-    if save_option != "good":
-        save_bad_words()
     if save_option != "bad":
         save_good_words()
+    if save_option != "good":
+        save_bad_words()

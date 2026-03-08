@@ -302,6 +302,7 @@ corna
 cornagem
 cornão
 cornisse
+cornice
 corno
 cornuda
 cornudo
@@ -626,7 +627,7 @@ Desmiolada
 Desmiolado
 Desmiolamento
 Diabo
-Escravo
+escravocrata
 Escrota
 Escroto
 Estrume
@@ -914,7 +915,6 @@ fodi
 fodida
 fodido
 fodão
-fria
 fudecao
 fudendo
 fudeção
@@ -2737,7 +2737,6 @@ fodi
 fodida
 fodido
 fodão
-fria
 fudecao
 fudendo
 fudeção
@@ -3148,6 +3147,7 @@ orelhudo
 narigudo
 narigona
 vesgo
+vesga
 beiçola
 bocão
 satanás
