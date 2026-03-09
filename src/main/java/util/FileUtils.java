@@ -58,10 +58,19 @@ public class FileUtils {
     /**
      * Reads the file containing the bad words and returns its content
      * 
-     * @return an array containing the formatted bad words
+     * @return an array of pairs with the following structure { badWord, firstPrefix }
      */
-    public static String[] readBadWords() {
-        return readFile(BAD_WORDS_FILE);
+    @SuppressWarnings("unchecked")
+    public static Pair<String, Integer>[] readBadWords() {
+        String[] linhas = readFile(BAD_WORDS_FILE);
+
+        Pair<String, Integer>[] badWordsFirstPrefix = new Pair[linhas.length - 1];
+        for (int i = 1; i < linhas.length; i++) {
+            String[] badWordPrefix = linhas[i].split(",");
+            badWordsFirstPrefix[i - 1] = new Pair(badWordPrefix[0], Integer.valueOf(badWordPrefix[1]));
+        }
+
+        return badWordsFirstPrefix;
     }
 
     /**
@@ -148,7 +157,7 @@ public class FileUtils {
         Pair<String, Integer>[] phrases = new Pair[linhas.length - 1];
         for (int i = 1; i < linhas.length; i++) {
             String[] phraseBadWordCount = linhas[i].split(",");
-            phrases[i + 1] = new Pair(phraseBadWordCount[0], Integer.valueOf(phraseBadWordCount[1]));
+            phrases[i - 1] = new Pair(phraseBadWordCount[0], Integer.valueOf(phraseBadWordCount[1]));
         }
 
         return phrases;
