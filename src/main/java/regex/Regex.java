@@ -3,15 +3,14 @@ package regex;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.Map;
-import util.FileUtils;
 
 public class Regex {
     
     private Pattern pattern;
     private Map<Character, String[]> leetMap;
 
-    public Regex(String[] pattern) {
-        this.leetMap = FileUtils.readCsvCharToLeetMap();
+    public Regex(String[] pattern, Map<Character, String[]> leetMap) {
+        this.leetMap = leetMap;
         this.pattern = Pattern.compile(buildPattern(pattern), Pattern.CASE_INSENSITIVE);
     }
 

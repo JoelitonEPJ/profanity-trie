@@ -19,7 +19,7 @@ public class FileUtils {
     private static final Path RESULTS_DIR   = Paths.get("out",  "results");
 
     private static final Path GOOD_WORDS_FILE = Paths.get("data", "good_words", "formatted.txt");
-    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.txt");
+    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.csv");
     private static final Path LEET_CODES_FILE = Paths.get("data", "leet_codes.csv");
 
     public static String[] readFile(Path caminho) {
@@ -58,19 +58,10 @@ public class FileUtils {
     /**
      * Reads the file containing the bad words and returns its content
      * 
-     * @return an array of pairs with the following structure { badWord, firstPrefix }
+     * @return an array containing the formatted bad words
      */
-    @SuppressWarnings("unchecked")
-    public static Pair<String, Integer>[] readBadWords() {
-        String[] linhas = readFile(BAD_WORDS_FILE);
-
-        Pair<String, Integer>[] badWordsFirstPrefix = new Pair[linhas.length - 1];
-        for (int i = 1; i < linhas.length; i++) {
-            String[] badWordPrefix = linhas[i].split(",");
-            badWordsFirstPrefix[i - 1] = new Pair(badWordPrefix[0], Integer.valueOf(badWordPrefix[1]));
-        }
-
-        return badWordsFirstPrefix;
+    public static String[] readBadWords() {
+        return readFile(BAD_WORDS_FILE);
     }
 
     /**

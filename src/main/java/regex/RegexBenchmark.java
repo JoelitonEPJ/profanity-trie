@@ -1,14 +1,24 @@
 package regex;
 
+import java.util.Map;
+
 import util.BenchmarkConfig;
+import util.FileUtils;
 
 public class RegexBenchmark extends BenchmarkConfig {
     
     private Regex benchmarkRegex;
+    private Map<Character, String[]> leetMap;
+
+    @Override
+    public void setUp() {
+        super.setUp();
+        leetMap = FileUtils.readCsvCharToLeetMap();
+    }
 
     @Override
     public void addWords(String[] words) {
-        benchmarkRegex = new Regex(words);
+        benchmarkRegex = new Regex(words, leetMap);
     }
 
     @Override
