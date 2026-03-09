@@ -1,7 +1,8 @@
-from itertools import groupby
 from collections import deque
+from itertools import groupby
 from os.path import isfile
 from pathlib import Path
+from csv import writer
 from sys import argv
 from re import sub
 
@@ -22,22 +23,58 @@ def normalize(content):
     return texto
 
 
-def clean_wordlist(content):
-    return sorted(set((normalize(word.lower()) for word in content.split())))
+def clean_wordlist(content, ordered=True):
+    cleaned = set((normalize(word.lower()) for word in content.split()))
+
+    return sorted(cleaned) if ordered else cleaned
+
+
+def assured_bad_word_prefix(good_words, bad_words):
+    print("info: Calculating the first assured bad word prefix...")
+    first_prefix_bad_word = {}
+
+    for bad_word in bad_words:
+        for i in range(len(bad_word)):
+            if all(not good_word.startswith(bad_word[:i + 1]) for good_word in good_words):
+                first_prefix_bad_word[bad_word] = i
+                break
+        else:
+            # só será bad word se parar no fim da palavra
+            first_prefix_bad_word[bad_word] = -1
+
+    return first_prefix_bad_word
 
 
 def save_bad_words():
-    with open(BAD_WORDS_DIR/"unformatted.txt", "r", encoding="utf-8") as input:
-        content = input.read()
+    unf_filepath = BAD_WORDS_DIR/"unformatted.txt"
+    gw_filepath  = GOOD_WORDS_DIR/"formatted.txt"
+    bw_filepath  = BAD_WORDS_DIR/"formatted.csv"
 
-    cleaned = clean_wordlist(content)
-    with open(BAD_WORDS_DIR/"formatted.txt", "w", encoding="utf-8") as output:
-        for word in cleaned:
-            output.write(f"{word}\n")
+    print(f"info: Generating file `{bw_filepath}` from `{unf_filepath}`...")
+    with open(unf_filepath, encoding="utf-8") as input:
+        bad_words = clean_wordlist(input.read())
+
+    if not isfile(gw_filepath):
+        print(f"info: File `{gw_filepath}` does not exist, creating...")
+        save_good_words()
+
+    with open(gw_filepath, encoding="utf-8") as gw_file:
+        good_words = set(good_word for good_word in gw_file.read().split())
+
+    bad_word_by_prefix = assured_bad_word_prefix(good_words, bad_words)
+    with open(bw_filepath, "w", encoding="utf-8") as output:
+        out_writer = writer(output, delimiter=",")
+        out_writer.writerow(["word", "first_idx"])
+
+        for word, first_idx in bad_word_by_prefix.items():
+            out_writer.writerow([word, first_idx])
+
+    print(f"info: File `{bw_filepath}` saved!")
 
 
 def remove_words_by_prefix(content):
-    cleaned   = clean_wordlist(content)
+    print("info: Filtering out good words by its prefixes...")
+    cleaned = clean_wordlist(content)
 
     seen  = []
     index = 1
@@ -55,37 +92,57 @@ def remove_words_by_prefix(content):
 
             placeholder.extend(wordlist)
 
-        cleaned    = placeholder
-        index += 1
+        cleaned  = placeholder
+        index   += 1
 
     return set(seen)
 
 
-def save_good_words():
-    bw_filepath = BAD_WORDS_DIR/"formatted.txt"
+def remove_variations(words, bad_words):
+    print("info: Removing bad words' variations...")
+    good_words = words - bad_words
 
-    with open(GOOD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as input:
+    for bad_word in bad_words:
+        good_words.discard(bad_word + 'es')
+        good_words.discard(bad_word + 'as')
+        good_words.discard(bad_word + 's')
+
+        if bad_word.endswith('a') and not bad_word.endswith('inha') and not bad_word.endswith('ona'):
+            good_words.discard(bad_word[:-1] + 'inha')
+            good_words.discard(bad_word[:-1] + 'ona')
+        if bad_word.endswith('o') and not bad_word.endswith('inho') and not bad_word.endswith('ao'):
+            good_words.discard(bad_word[:-1] + 'inho')
+            good_words.discard(bad_word[:-1] + 'ao')
+
+    return good_words
+
+
+def save_good_words():
+    unf_filepath = GOOD_WORDS_DIR/"unformatted.txt"
+    gw_filepath  = GOOD_WORDS_DIR/"formatted.txt"
+
+    print(f"info: Generating file `{gw_filepath}` from `{unf_filepath}`...")
+    with open(unf_filepath, encoding="utf-8") as input:
         content = input.read()
 
     words = remove_words_by_prefix(content)
 
-    if not isfile(bw_filepath):
-        save_bad_words()
+    with open(BAD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as bw_file:
+        bad_words = clean_wordlist(bw_file.read(), ordered=False)
 
-    with open(bw_filepath) as bw_file:
-        bad_words = set(bw_file.read().split())
-
-    good_words = words - bad_words
-    with open(GOOD_WORDS_DIR/"formatted.txt", "w") as output:
+    good_words = remove_variations(words, bad_words)
+    with open(gw_filepath, "w", encoding="utf-8") as output:
         for good_word in sorted(good_words):
             output.write(f"{good_word}\n")
 
+    print(f"info: File `{gw_filepath}` saved!")
 
-# rode da seguinte maneira: python format_wordlist.py [good|bad]
+
+# rode da seguinte maneira: python format_wordlist.py [good bad]
 if __name__ == "__main__":
     save_option = argv[1] if len(argv) > 1 else "all"
 
-    if save_option != "good":
-        save_bad_words()
     if save_option != "bad":
         save_good_words()
+    if save_option != "good":
+        save_bad_words()
