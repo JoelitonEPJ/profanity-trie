@@ -21,7 +21,7 @@ def gera_frases(tam_frases):
         good_words = input.readlines()
 
     with open(BAD_WORDS_DIR/"formatted.csv", "r", encoding="utf-8") as input:
-        bad_words = [linha[:linha.index(",")] for linha in input.readlines()[:1]]
+        bad_words = [linha[:linha.index(",")] for linha in input.readlines()[1:]]
 
     leet_dict = leetcsv_to_dict()
     for i in range(len(tam_frases)):
