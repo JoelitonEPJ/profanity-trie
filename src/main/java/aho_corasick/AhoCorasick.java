@@ -23,7 +23,7 @@ public class AhoCorasick {
 
     private void insert(String s) {
         Node curr = root;
-        for (char c : s.toLowerCase().toCharArray()) {
+        for (char c : s.toCharArray()) {
             int idx = c - 'a';
             if (idx < 0 || idx >= 26) continue;
             if (curr.next[idx] == null) curr.next[idx] = new Node();
@@ -63,7 +63,6 @@ public class AhoCorasick {
         
         int count = 0;
         Node curr = root;
-        text = text.toLowerCase();
 
         for (int i = 0; i < text.length(); i++) {
             int idx = text.charAt(i) - 'a';
@@ -88,7 +87,7 @@ public class AhoCorasick {
         if (word == null || word.isEmpty()) return false;
 
         Node curr = root;
-        for (char c : word.toLowerCase().toCharArray()) {
+        for (char c : word.toCharArray()) {
             int idx = c - 'a';
             
             if (idx < 0 || idx >= 26 || curr.next[idx] == null || curr.next[idx] == root) {

@@ -2,19 +2,16 @@ package regex;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 public class Regex {
     
     private Pattern pattern;
+    private Map<Character, String[]> leetMap;
 
-    public Regex(String pattern) {
-        this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public Regex(String[] palavras, HashMap<Character, String[]> leets) {
-        buildPattern(palavras, leets);
+    public Regex(String[] pattern, Map<Character, String[]> leetMap) {
+        this.leetMap = leetMap;
+        this.pattern = Pattern.compile(buildPattern(pattern), Pattern.CASE_INSENSITIVE);
     }
 
     public void setPattern(String pattern) {
@@ -25,18 +22,23 @@ public class Regex {
         return pattern.matcher(entrada);
     }
 
-    public ArrayList<String> listarMatches(String entrada) {
-        ArrayList<String> matches = new ArrayList<>();
+    public int countMatches(String entrada) {
+        int counter = 0;
 
         Matcher matcher = matcher(entrada);
-        while (matcher.find()) {
-            matches.add(matcher.group());
-        }
+        while (matcher.find()) 
+            counter++;
 
-        return matches;
+        return counter;
     }
 
-    public void buildPattern(String[] palavras, HashMap<Character, String[]> leetMap) {
+    public boolean matches(String word) {
+        Matcher matcher = matcher(word);
+
+        return matcher.matches();
+    }
+
+    public String buildPattern(String[] palavras) {
         StringBuilder pattern = new StringBuilder();
 
         String padrao = "";
@@ -45,9 +47,9 @@ public class Regex {
             String[] leets = {};
             for (int j = 0; j < palavras[i].length(); j++) {
                 char charAtual = Character.toLowerCase(palavras[i].charAt(j));
-                leets = leetMap.get(charAtual);
+                leets = this.leetMap.get(charAtual);
 
-                if (ultimoChar != charAtual) padrao = "(?:" + String.join("|", leets) + ")+";
+                if (ultimoChar != charAtual) padrao = "(?:" + String.join("|", leets) + ")+ ?";
 
                 ultimoChar = charAtual;
             }
@@ -56,6 +58,6 @@ public class Regex {
             pattern.append(padrao); 
         }
 
-        this.pattern = Pattern.compile(pattern.toString(), Pattern.CASE_INSENSITIVE);
+        return pattern.toString();
     }
 }
