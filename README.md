@@ -93,6 +93,7 @@ A filtragem de palavras ofensivas é um tema bem complexo com muitos assuntos qu
 Dessa forma, tendo essa problemática em mente e considerando que a estrutura base de análise desse projeto inicialmente escolhido era a **Trie**, decidimos focar nos métodos relacionados ao uso de blacklists para realizar essa filtragem, logo, nosso projeto discutirá os seguintes métodos: **Aho-Corasick**, **HashTable**, **Trie** e **Regex**.
 
 Para realizar a análise desses métodos, nós definimos duas restrições para os nossos testes:
+
 - **Palavras diferentes estarão separadas**: Para evitar problemas como o de [Scunthorpe](https://en.wikipedia.org/wiki/Scunthorpe_problem), que dificultariam a realização de análises estatísticas, nós evitamos trabalhar com a detecção de palavras ofensivas que estejam coladas à outras. Porém, iremos fazer testes para comparar se algum método, da maneira que foi implementado, sofreria desse problema;
 
 - **A String recebida não pode ser processada**: Para comparar puramente a capacidade das diferentes estruturas/algoritmos, optamos por adicionar a restrição que não podemos fazer um pré-processamento na palavra/frase que estará sendo analisada, ou seja, não é permitido normalizar a palavra (substituir caracteres unicode por seus equivalentes ascii) ou mudar sua capitalização.
@@ -150,7 +151,7 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
 
 ### 3. Geração das cargas de teste (entrada)
 
-Após separar as palavras que servirão de entrada, nós fizemos um "cleanup", removendo duplicatas e normalizando elas para ascii. Com isso, salvamos as palavras no arquivo [bad_words_formatted.txt](./data/bad_words_formatted.txt).
+Após separar as palavras que servirão de entrada, nós fizemos um "cleanup", removendo duplicatas e normalizando elas para ascii. Com isso, salvamos as palavras no arquivo [Formatted Bad Words](./data/bad_words/formatted.csv).
 
 Através dele, criaremos as entradas que servirão para os diferentes experimentos de forma programática, utilizando scripts na linguagem python
 
