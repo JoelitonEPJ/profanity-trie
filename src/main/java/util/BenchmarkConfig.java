@@ -1,5 +1,6 @@
 package util;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,11 @@ abstract public class BenchmarkConfig {
     public abstract int countBadWords(String phrase);
 
     public abstract boolean checkIsBadWord(String word);
+
+    public void addWords(Pair<String, Integer>[] wordsFirstPrefix) {
+        String[] words = Arrays.stream(wordsFirstPrefix).map(Pair::first).toArray(String[]::new);
+        addWords(words);
+    }
 
     @Setup(Level.Trial)
     public void setUp() {
