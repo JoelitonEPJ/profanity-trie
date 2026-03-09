@@ -19,7 +19,7 @@ public class FileUtils {
     private static final Path RESULTS_DIR   = Paths.get("out",  "results");
 
     private static final Path GOOD_WORDS_FILE = Paths.get("data", "good_words", "formatted.txt");
-    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.txt");
+    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.csv");
     private static final Path LEET_CODES_FILE = Paths.get("data", "leet_codes.csv");
 
     public static String[] readFile(Path caminho) {

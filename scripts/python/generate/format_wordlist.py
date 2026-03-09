@@ -62,7 +62,7 @@ def save_bad_words():
         good_words = set(good_word for good_word in gw_file.read().split())
 
     bad_word_by_prefix = assured_bad_word_prefix(good_words, bad_words)
-    with open(bw_filepath, "w", encoding="utf-8") as output:
+    with open(bw_filepath, "w", newline="", encoding="utf-8") as output:
         out_writer = writer(output, delimiter=",")
         out_writer.writerow(["word", "first_idx"])
 
