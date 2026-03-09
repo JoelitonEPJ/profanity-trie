@@ -1,81 +1,103 @@
 package aho_corasick;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 public class AhoCorasick {
+    private final Node root;
 
-    static class Node {
+    private static class Node {
         Node[] next = new Node[26];
         Node fail;
-        List<String> out = new ArrayList<>();
+        Node dictLink;
+        String word; 
     }
 
-    static Node root = new Node();
+    public AhoCorasick(String[] words) {
+        this.root = new Node();
+        for (String s : words) {
+            insert(s);
+        }
+        build();
+    }
 
-    static void insert(String s) {
+    private void insert(String s) {
         Node curr = root;
-
-        for (char c : s.toCharArray()) {
+        for (char c : s.toLowerCase().toCharArray()) {
             int idx = c - 'a';
-
-            if (curr.next[idx] == null)
-                curr.next[idx] = new Node();
-
+            if (idx < 0 || idx >= 26) continue;
+            if (curr.next[idx] == null) curr.next[idx] = new Node();
             curr = curr.next[idx];
         }
-
-        curr.out.add(s);
+        curr.word = s;
     }
 
-    static void build() {
+    private void build() {
         Queue<Node> q = new ArrayDeque<>();
-
         for (int i = 0; i < 26; i++) {
             if (root.next[i] != null) {
                 root.next[i].fail = root;
                 q.add(root.next[i]);
+            } else {
+                root.next[i] = root;
             }
         }
 
         while (!q.isEmpty()) {
             Node curr = q.poll();
-
             for (int i = 0; i < 26; i++) {
                 if (curr.next[i] != null) {
-                    Node f = curr.fail;
-
-                    while (f != null && f.next[i] == null)
-                        f = f.fail;
-
-                    curr.next[i].fail = (f == null) ? root : f.next[i];
-
-                    curr.next[i].out.addAll(curr.next[i].fail.out);
-
-                    q.add(curr.next[i]);
+                    Node child = curr.next[i];
+                    child.fail = curr.fail.next[i];
+                    child.dictLink = (child.fail.word != null) ? child.fail : child.fail.dictLink;
+                    q.add(child);
+                } else {
+                    curr.next[i] = curr.fail.next[i];
                 }
             }
         }
     }
 
-    static void search(String text) {
+    public int countBadWords(String text) {
+        if (text == null) return 0;
+        
+        int count = 0;
         Node curr = root;
+        text = text.toLowerCase();
 
         for (int i = 0; i < text.length(); i++) {
             int idx = text.charAt(i) - 'a';
 
-            while (curr != root && curr.next[idx] == null)
-                curr = curr.fail;
+            if (idx < 0 || idx >= 26) {
+                curr = root;
+                continue;
+            }
 
-            if (curr.next[idx] != null)
-                curr = curr.next[idx];
+            curr = curr.next[idx];
 
-            for (String s : curr.out)
-                System.out.println("\"" + s + "\" no índice: " + (i - s.length() + 1));
+            Node temp = (curr.word != null) ? curr : curr.dictLink;
+            while (temp != null) {
+                count++;
+                temp = temp.dictLink;
+            }
         }
+        return count;
     }
 
-    public static void main(String[] args) {}
+    public boolean isBadWord(String word) {
+        if (word == null || word.isEmpty()) return false;
+
+        Node curr = root;
+        for (char c : word.toLowerCase().toCharArray()) {
+            int idx = c - 'a';
+            
+            if (idx < 0 || idx >= 26 || curr.next[idx] == null || curr.next[idx] == root) {
+                return false;
+            }
+            
+            curr = curr.next[idx];
+        }
+
+        return curr.word != null;
+    }
 }
