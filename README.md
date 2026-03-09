@@ -8,11 +8,23 @@ Implementação, documentação e comparação da Trie e outros métodos para a 
 
 - [Introdução](#introdução)
 
-- [Objetivo](#introdução)
+- [Objetivo](#objetivo)
 
-- [Introdução](#introdução)
+- [Estruturas e Algoritmos](#estruturas-e-algoritmos)
 
-- [Introdução](#introdução)
+- [Metodologia](#metodologia)
+
+- [Experimentos](#experimentos)
+
+- [Conclusão](#conclusão)
+
+- [Ameaças à validade](#ameaças-à-validade)
+
+- [Projetos Futuros](#projetos-futuros)
+
+- [Contribuintes](#contribuintes)
+
+---
 
 ### Versionamento de código
 
@@ -24,11 +36,11 @@ Dessa forma, foi possível garantir que todos os integrantes do projeto estivess
 
 A comparação entre os métodos de filtragem foi feita utilizando a biblioteca [JMH](https://openjdk.org/projects/code-tools/jmh/) (Java Microbenchmark Harness), uma biblioteca poderosa oficial da [OpenJDK](https://openjdk.org/), utilizada para criar, executar e analisar microbenchmarks em linguagens que utilizam a máquina virtual de java (JVM). Para esse projeto, utilizamos ela para comparar diferentes métricas das estruturas/algoritmos implementados na linguagem Java.
 
-### Geração de inputs (carga de dados)
+### Geração de inputs
 
 A geração das cargas de dados foi feita através da linguagem de programação [Python](https://www.python.org/about/), escolhida por sua simplicidade, legibilidade e alto nível de abstração. Foram desenvolvidos scripts específicos para a criação de cenários distintos de testes (especificado mais à diante) e para formatação dos dados de entrada, permitindo a simulação de entradas com diferentes comportamentos.
 
-### Plotagem (geração) de gráficos
+### Geração de gráficos
 
 A geração dos gráficos foi realizada a partir dos dados experimentais armazenados em arquivos `.csv`, os quais continham os resultados obtidos durante a execução dos diferentes testes. Para a visualização e análise desses dados, utilizou-se a biblioteca [Matplotlib](https://matplotlib.org/) da linguagem Python, que permitiu a construção de gráficos que representassem o comportamento e o desempenho dos métodos avaliados.
 
@@ -42,7 +54,7 @@ O código do projeto foi organizado da seguinte maneira:
 │    └───python
 │       ├────generate
 │       └────plot
-│   src
+├───src
 │   └───main
 │       └───java
 │           ├───aho_corasick
@@ -62,19 +74,56 @@ O arquivo `run-benchmark.sh` foi utilizado para rodar o projeto de maneira simpl
 
 ## Introdução
 
-### Qual é a necessidade de um filtro de palavras ofensivas?
+### Problemática
 
 A existência de um filtro de palavras ofensivas é muito importante para plataformas digitais que almejam ser seguras. Filtros desse tipo são utilizados nos mais diversos ambientes digitais como redes sociais, fóruns, jogos online e plataformas de comunicação. É o uso dessa ferramenta que torna possível a prevenção de discursos de ódio, moderação e cumprimento de políticas, e proteção de usuários vulneráveis como crianças e adolescentes, por exemplo.
 
-Mesmo com a grande relevância dessa ferramenta
+Porém, mesmo com a grande relevância dessa ferramenta, ainda não existe um meio definitivo para fazer essa filtragem, já que existem múltiplas estratégias e múltiplas maneiras de aplicar cada uma dessas estratégias. Podemos separar as estratégias em dois tipos diferentes, os quais são:
 
-A criação de um filtro customizado de palavras ofensivas é um problema muito relevante para as plataformas online (muitos jogos e redes sociais possuem filtros desse tipo, por exemplo). Porém, mesmo sendo uma questão tão importante para o contexto atual, ainda não existe um meio definitivo para fazer essa filtragem.
+- **Uso de blacklists**: estratégias desse tipo envolvem a criação de listas de palavras banidas. Geralmente, são usadas em conjunto com algoritmos/estruturas especializados na busca e recuperação rápida de informação em strings, como **Regex**, **Aho-Corasick** e **Trie**, ou estruturas de busca rápida de propósito geral, como **HashTables**;
 
-A principal motivação por trás da escolha desse tema foi pelo seu caráter indefinido até o presente momento. Dessa forma, o projeto tem como propósito comparar os diferentes métodos tradicionais para filtragem de palavras ofensivas: Trie, RegExp e HashTable, com enfoque na performance da Trie quando comparada aos demais.
+- **Análise Contextual**: métodos relacionados a essa estratégia estão geralmente relacionados à algoritmos de PLN (Processamento de Linguagem Natural) ou de classificação, como o [classificador de Naive Bayes](https://en.wikipedia.org/wiki/Naive_Bayes_classifier), que conseguem detectar padrões nas frases e classificá-las de acordo.
+
+---
+
+### Escopo
+
+A filtragem de palavras ofensivas é um tema bem complexo com muitos assuntos que podem se ramificar em diversos projetos diferentes. Dessa forma, nós tivemos o cuidado de definir bem o escopo desse projeto de antemão, de forma que fosse possível discutir e analisar de maneira completa o tema proposto por uma das vias.
+
+Dessa forma, tendo essa problemática em mente e considerando que a estrutura base de análise desse projeto inicialmente escolhido era a **Trie**, decidimos focar nos métodos relacionados ao uso de blacklists para realizar essa filtragem, logo, nosso projeto discutirá os seguintes métodos: **Aho-Corasick**, **HashTable**, **Trie** e **Regex**.
+
+Para realizar a análise desses métodos, nós definimos duas restrições para os nossos testes:
+- **Palavras diferentes estarão separadas**: Para evitar problemas como o de [Scunthorpe](https://en.wikipedia.org/wiki/Scunthorpe_problem), que dificultariam a realização de análises estatísticas, nós evitamos trabalhar com a detecção de palavras ofensivas que estejam coladas à outras. Porém, iremos fazer testes para comparar se algum método, da maneira que foi implementado, sofreria desse problema;
+
+- **A String recebida não pode ser processada**: Para comparar puramente a capacidade das diferentes estruturas/algoritmos, optamos por adicionar a restrição que não podemos fazer um pré-processamento na palavra/frase que estará sendo analisada, ou seja, não é permitido normalizar a palavra (substituir caracteres unicode por seus equivalentes ascii) ou mudar sua capitalização.
 
 ## Objetivo
 
-O objetivo do seguinte projeto é comparar a performance em diferentes áreas dos métodos tradicionais existentes para detecção e filtragem de palavras ofensivas, nomeadamente: Algoritmo de Aho-Corasick, Trie, HashTable e Regex, com enfoque na performance da Trie quando comparada às demais, visando analisar sua viabilidade de uso em um caso real.
+Nesse contexto, o propósito do seguinte projeto é analisar e comparar diferentes implementações para filtragem de palavras ofensivas que se baseiam no uso de blacklists para categorizar palavras como `bad` ou `good` words. O estudo tem como objetivo analisar qual abordagem se mostra mais eficaz para identificar palavras ofensivas no meio de frases geradas pseudo-aleatoriamente livres de contexto e gírias, de maneira que seja possível analisar friamente os dados do experimento.
+
+O tema discutido vem se tornando cada vez mais relevante nos dias atuais, visto que diversos estados e até mesmo países iniciaram a instauração de leis relacionadas à obrigatoriedade da verificação de idade na internet, a exemplo do [Texas](https://support.google.com/googleplay/android-developer/answer/16569691?hl=en), [Brasil](https://g1.globo.com/tecnologia/noticia/2025/12/11/eca-digital-protecao-criancas-adolescentes-internet.ghtml) e [Inglaterra](https://en.wikipedia.org/wiki/Online_age_verification_in_the_United_Kingdom), sob o pretexto de proteção das crianças e adolescentes nos ambientes digitais, algo que está intimamente relacionado com a moderação de conteúdo através da filtragem de palavras ofensivas.
+
+## Estruturas e Algoritmos
+
+### Aho-Corasick
+
+---
+
+### Baseline
+
+---
+
+### HashTable
+
+---
+
+### Trie
+
+---
+
+### Regex
+
+---
 
 ## Metodologia
 
@@ -84,12 +133,7 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
 
 
 
-### 2. Definição de restrições para as comparações
-
-- palavras separadas
-- não poderá ser feito nenhum processamento na string
-
-### 3. Busca por "Blacklists"
+### 2. Busca por Blacklists
 
 - pesquisa no github por listas palavras ofensivas, resultados:
   - [Cuss Words](https://github.com/words/cuss/blob/main/pt.js)
@@ -104,13 +148,13 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
   - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
 
 
-### 4. Geração das cargas de teste (entrada)
+### 3. Geração das cargas de teste (entrada)
 
 Após separar as palavras que servirão de entrada, nós fizemos um "cleanup", removendo duplicatas e normalizando elas para ascii. Com isso, salvamos as palavras no arquivo [bad_words_formatted.txt](./data/bad_words_formatted.txt).
 
 Através dele, criaremos as entradas que servirão para os diferentes experimentos de forma programática, utilizando scripts na linguagem python
 
-### 5. Análise de Desempenho das estruturas em diferentes contextos
+### 4. Análise de Desempenho das estruturas em diferentes contextos
 
 ## Experimentos
 
@@ -132,6 +176,20 @@ Dadas "sentenças" geradas aleatoriamente, iremos comparar a velocidade de proce
 
 Finalmente, iremos comparar a capacidade de detecção de profanidades de cada método, analisando seu desempenho com entradas "complicadas", tentando forçar falsos positivos/negativos.
 
-## Análise dos Resultados
-
 ## Conclusão
+
+## Ameaças à validade
+
+## Projetos Futuros
+
+## Contribuintes
+
+- [Anderson Breno Santos Silva](https://github.com/AndersonBreno1)
+
+- [Arthur Ledra de Azevedo](https://github.com/arthurlazevedo)
+
+- [Carlos Arthur Nóbrega Soares](https://github.com/C-Arthurr)
+
+- [Joéliton Elias Pereira Júnior](https://github.com/JoelitonEPJ)
+
+- [Gabriel Victor de Sousa Lima](https://github.com/gvsl60)
