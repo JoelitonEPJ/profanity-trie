@@ -27,11 +27,11 @@ def clean_wordlist(content):
 
 
 def save_bad_words():
-    with open(BAD_WORDS_DIR/"unformatted.txt", "r") as input:
+    with open(BAD_WORDS_DIR/"unformatted.txt", "r", encoding="utf-8") as input:
         content = input.read()
 
     cleaned = clean_wordlist(content)
-    with open(BAD_WORDS_DIR/"formatted2.txt", "w") as output:
+    with open(BAD_WORDS_DIR/"formatted.txt", "w", encoding="utf-8") as output:
         for word in cleaned:
             output.write(f"{word}\n")
 
@@ -64,7 +64,7 @@ def remove_words_by_prefix(content):
 def save_good_words():
     bw_filepath = BAD_WORDS_DIR/"formatted.txt"
 
-    with open(GOOD_WORDS_DIR/"unformatted.txt") as input:
+    with open(GOOD_WORDS_DIR/"unformatted.txt", encoding="utf-8") as input:
         content = input.read()
 
     words = remove_words_by_prefix(content)
@@ -72,11 +72,11 @@ def save_good_words():
     if not isfile(bw_filepath):
         save_bad_words()
 
-    with open(bw_filepath) as bw_filepath:
-        bad_words = set(bw_filepath.read().split())
+    with open(bw_filepath) as bw_file:
+        bad_words = set(bw_file.read().split())
 
     good_words = words - bad_words
-    with open(GOOD_WORDS_DIR/"formatted2.txt", "w") as output:
+    with open(GOOD_WORDS_DIR/"formatted.txt", "w") as output:
         for good_word in sorted(good_words):
             output.write(f"{good_word}\n")
 

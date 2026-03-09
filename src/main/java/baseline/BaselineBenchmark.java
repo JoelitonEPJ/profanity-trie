@@ -1,8 +1,8 @@
-package trie;
+package baseline;
 
 import util.BenchmarkConfig;
 
-public class TrieBenchmark extends BenchmarkConfig {
+public class BaselineBenchmark extends BenchmarkConfig {
     @Override
     public void addWords(String[] words) {
     }
@@ -17,4 +17,3 @@ public class TrieBenchmark extends BenchmarkConfig {
         return false;
     }
 }
-
