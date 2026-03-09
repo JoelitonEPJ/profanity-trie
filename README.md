@@ -1,8 +1,72 @@
 # Estratégias de Filtragem de palavras ofensivas
 
-Implementação, documentação e comparação da Trie e outros métodos na filtragem de palavras ofensivas.
+Implementação, documentação e comparação da Trie e outros métodos para a filtragem de palavras ofensivas.
+
+## Sumário
+
+- [Estrutura de diretórios](#estrutura-de-diretórios)
+
+- [Introdução](#introdução)
+
+- [Objetivo](#introdução)
+
+- [Introdução](#introdução)
+
+- [Introdução](#introdução)
+
+### Versionamento de código
+
+O versionamento do projeto foi feito utilizando [Git](https://git-scm.com/) (por meio da plataforma [Github](https://docs.github.com/pt)), permitindo o controle das alterações ao longo do projeto. Foram criadas branches para organizar melhor o fluxo de desenvolvimento e isolar as alterações. Além disso, como regra, permitimos apenas que a branch `main` fosse alterada por meio de pull requests, que deveriam obrigatoriamente ser revisadas por um membro da equipe, garantindo a integração organizada das modificações ao repositório principal.
+
+Dessa forma, foi possível garantir que todos os integrantes do projeto estivessem cientes das alterações que foram introduzidas. Foi criada também uma restrição que pull requests seriam apenas aceitas com a opção de `Squash and Merge`, que possibilita um histórico mais limpo de commits, de forma que seja mais fácil notas a contribuição para o repositório.
+
+### Comparação entre os métodos de filtragem
+
+A comparação entre os métodos de filtragem foi feita utilizando a biblioteca [JMH](https://openjdk.org/projects/code-tools/jmh/) (Java Microbenchmark Harness), uma biblioteca poderosa oficial da [OpenJDK](https://openjdk.org/), utilizada para criar, executar e analisar microbenchmarks em linguagens que utilizam a máquina virtual de java (JVM). Para esse projeto, utilizamos ela para comparar diferentes métricas das estruturas/algoritmos implementados na linguagem Java.
+
+### Geração de inputs (carga de dados)
+
+A geração das cargas de dados foi feita através da linguagem de programação [Python](https://www.python.org/about/), escolhida por sua simplicidade, legibilidade e alto nível de abstração. Foram desenvolvidos scripts específicos para a criação de cenários distintos de testes (especificado mais à diante) e para formatação dos dados de entrada, permitindo a simulação de entradas com diferentes comportamentos.
+
+### Plotagem (geração) de gráficos
+
+A geração dos gráficos foi realizada a partir dos dados experimentais armazenados em arquivos `.csv`, os quais continham os resultados obtidos durante a execução dos diferentes testes. Para a visualização e análise desses dados, utilizou-se a biblioteca [Matplotlib](https://matplotlib.org/) da linguagem Python, que permitiu a construção de gráficos que representassem o comportamento e o desempenho dos métodos avaliados.
+
+## Estrutura de Diretórios
+
+O código do projeto foi organizado da seguinte maneira:
+
+```
+/
+├───scripts
+│    └───python
+│       ├────generate
+│       └────plot
+│   src
+│   └───main
+│       └───java
+│           ├───aho_corasick
+│           ├───baseline
+│           ├───hash_table
+│           ├───regex
+│           ├───trie
+│           └───util
+└───run-benchmark.sh
+```
+
+O diretório `scripts` contém scripts escritos na linguagem Python utilizados para gerar entradas (contidos no subdiretório `generate`) e plotar os gráficos relevantes aos experimentos (reúnidos no subdiretório `plot`)
+
+Já o diretório `src` contém a implementação em Java dos métodos de filtragem escolhidos, nomeadamente: **Aho-Corasick**, **HashTable**, **Regex**, **Trie**, além de conter o baseline, a implementação "ingênua", que serve como ponto de referência base para os outros métodos.
+
+O arquivo `run-benchmark.sh` foi utilizado para rodar o projeto de maneira simples. Ele é responsável por criar os diretórios necessários e fazer o pré-processamento necessário para rodar as comparações. Para mais informações, é possível rodá-lo com as flags `-h`/`--help` para entender melhor como ele funciona.
 
 ## Introdução
+
+### Qual é a necessidade de um filtro de palavras ofensivas?
+
+A existência de um filtro de palavras ofensivas é muito importante para plataformas digitais que almejam ser seguras. Filtros desse tipo são utilizados nos mais diversos ambientes digitais como redes sociais, fóruns, jogos online e plataformas de comunicação. É o uso dessa ferramenta que torna possível a prevenção de discursos de ódio, moderação e cumprimento de políticas, e proteção de usuários vulneráveis como crianças e adolescentes, por exemplo.
+
+Mesmo com a grande relevância dessa ferramenta
 
 A criação de um filtro customizado de palavras ofensivas é um problema muito relevante para as plataformas online (muitos jogos e redes sociais possuem filtros desse tipo, por exemplo). Porém, mesmo sendo uma questão tão importante para o contexto atual, ainda não existe um meio definitivo para fazer essa filtragem.
 
@@ -37,7 +101,7 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
   - [Word List for speech recognition subtitling](https://github.com/sayonari/goodBadWordlist/blob/main/pt/BadList.txt)
 
 - pesquisa por possíveis codificações simples para letras:
-    - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
+  - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
 
 
 ### 4. Geração das cargas de teste (entrada)
