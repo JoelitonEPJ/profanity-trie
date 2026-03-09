@@ -14,6 +14,7 @@ help() {
 
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
     help
+    exit
 fi
 
 declare -A classes=( [trie]="Trie" [aho_corasick]="AhoCorasick" [hash_table]="HashTable" [regex]="Regex" [baseline]="Baseline" )
@@ -41,7 +42,7 @@ if [ ! -d $results_dir ] || [ ! -d out/graphs ]; then
     mkdir -p out/{results,graphs}
 fi
 
-if [ ! -f data/bad_words/formatted.txt ] || [ ! -f data/good_words/formatted.txt ]; then
+if [ ! -f data/bad_words/formatted.csv ] || [ ! -f data/good_words/formatted.txt ]; then
     python3 scripts/python/format_wordlist.py
 fi
 
@@ -52,14 +53,13 @@ fi
 if [[ -v classes[${1}] ]]; then
     run_class=${classes[${1}]}
     run_package="${1}\."
+    shift
 else
     run_package=".*"
 fi
 
-if [ -n "$2" ]; then
+if [ -n "$1" ]; then
     run_comp=$2
-elif [ -n "$1" ] && [ ! -n "$run_class" ]; then
-    run_comp=$1
 else
     run_all=yes
 fi
