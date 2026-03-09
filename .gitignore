@@ -30,4 +30,9 @@ target/
 
 # Arquivos gerados, serão readicionados ao final
 data/*_words/formatted.txt
+<<<<<<< HEAD
 data/sentences
+=======
+data/sentences
+out/results
+>>>>>>> 47a19b0224fa0f209a93a24c43f69ac95eb138e6

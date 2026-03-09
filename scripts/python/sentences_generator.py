@@ -1,7 +1,6 @@
 from pathlib import Path
 from sys import argv
 import random
-import shutil
 import csv
 import os
 
@@ -20,10 +19,10 @@ def gera_frases(tam_frases):
 
     if len(tam_frases) == 0: tam_frases = TAM_FRASES_DEFAULT
 
-    with open(GOOD_WORDS_DIR/"unformatted.txt", "r", encoding="utf-8") as input:
+    with open(GOOD_WORDS_DIR/"formatted.txt", "r", encoding="utf-8") as input:
         good_words = input.readlines()
 
-    with open(BAD_WORDS_DIR/"unformatted.txt", "r", encoding="utf-8") as input:
+    with open(BAD_WORDS_DIR/"formatted.txt", "r", encoding="utf-8") as input:
         bad_words = input.readlines()
 
     leet_dict = leetcsv_to_dict()
@@ -67,8 +66,7 @@ def encoder(palavra, leet_dict):
     out = ""
     for letra in palavra:
         if (is_special_character(letra)): continue
-        atual = padronizador(letra.lower(), leet_dict)
-        out += random.choice(leet_dict[atual])
+        out += random.choice(leet_dict[letra])
 
     return out
 
@@ -84,11 +82,6 @@ def modifier(palavra, leet_dict):
 
 def is_special_character(character):
     return not (65 <= ord(character) <= 90) and not (97 <= ord(character) <= 122) and not (192 <= ord(character) <= 252)
-
-def padronizador(letra, leet_dict):
-    for key, value in leet_dict.items():
-        if letra in value:
-            return key
 
 def leetcsv_to_dict():
     dict = {}
