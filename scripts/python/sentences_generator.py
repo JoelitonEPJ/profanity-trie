@@ -33,21 +33,42 @@ def gera_frases(tam_frases):
 
         with open(DATA_DIR/"sentences"/arquivo, "w", newline="", encoding="utf-8") as arq_csv:
             writer = csv.writer(arq_csv, delimiter=",")
-            writer.writerow(["frase", "qtd_bad_words"])
+            writer.writerow(["frase", "qtd_bad_words", "modificadores"])
             for _ in range(QUANT_FRASES_DEFAULT):
+                mod = select_modifier() # lista de modificadores dessa frase
+
                 frase_atual = ""
                 conta_bad_words = 0
                 for _ in range(tam_atual):
                     if random.random() < 0.75:
                         frase_atual += random.choice(good_words).strip() + " "
                     else:
-                        frase_atual += modifier(random.choice(bad_words).strip(), leet_dict) + " "
+                        frase_atual += modifier(random.choice(bad_words).strip(), leet_dict, mod).strip() + " "
                         conta_bad_words += 1
 
-                writer.writerow([frase_atual.strip(), conta_bad_words])
+                writer.writerow([frase_atual.strip(), conta_bad_words, mod])
+
+def select_modifier():
+    out = []
+
+    # chance encoder
+    if random.random() < 0.2:
+        out.append("encode")
+    # chance stretcher
+    if random.random() < 0.3:
+        out.append("stretch")
+    # chance uppercaser
+    if random.random() < 0.5:
+        out.append("uppercase")
+    # chance spacer
+    if random.random() < 0.05:
+        out.append("space")
+
+    return random.choice(out) if out else "none"
 
 def stretcher(palavra):
     out = ""
+
     for letra in palavra:
         out += letra * random.randint(1, 7)
 
@@ -55,29 +76,50 @@ def stretcher(palavra):
 
 def spacer(palavra):
     out = ""
+
     for letra in palavra:
         out += letra + " "
-
-    return out.strip()
+    
+    return out
 
 def encoder(palavra, leet_dict):
     out = ""
+
     for letra in palavra:
-        if (is_special_character(letra)):
-            continue
-        out += random.choice(leet_dict[letra])
+        if not is_special_character(letra): 
+            letra = random.choice(leet_dict[letra])
+        
+        out += letra
 
     return out
 
-def modifier(palavra, leet_dict):
-    out = palavra
-    if random.random() < 0.2:
-        out = encoder(out, leet_dict)
-    if random.random() < 0.3:
-        out = stretcher(out)
-    if random.random() < 0.05:
-        out = spacer(out)
+def uppercaser(palavra):
+    out = ""
+
+    for letra in palavra:
+        out += letra.upper()
+    
     return out
+
+def modifier(palavra, leet_dict, modifier):
+    out = ""
+
+    for letra in palavra:
+        if random.random() < 0.75:
+            match modifier:
+                case "encode":
+                    letra = encoder(letra, leet_dict)
+                case "stretch":
+                    letra = stretcher(letra)
+                case "space":
+                    letra = spacer(letra)
+                case "uppercase":
+                    letra = uppercaser(letra)
+        
+        out += letra
+    
+    return out
+                
 
 def is_special_character(character):
     return not (65 <= ord(character) <= 90) and not (97 <= ord(character) <= 122) and not (192 <= ord(character) <= 252)
