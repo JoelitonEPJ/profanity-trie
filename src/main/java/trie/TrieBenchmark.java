@@ -3,11 +3,11 @@ package trie;
 import util.BenchmarkConfig;
 
 public class TrieBenchmark extends BenchmarkConfig {
-    ProfanityTrie trie;
+    Trie trie;
 
     @Override
     public void addWords(String[] words) {
-        trie = new ProfanityTrie(words);
+        trie = new Trie(words);
     }
 
     @Override
