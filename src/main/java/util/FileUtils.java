@@ -7,8 +7,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,7 +196,8 @@ public class FileUtils {
         final Path filePath = RESULTS_DIR.resolve("search_phrases_efficiency.csv");
 
         String lineToSave = className + "," + correctAmount + "," + phraseSize;
-        List<String> linhas = Arrays.asList(readFile(filePath));
+        List<String> linhas = new ArrayList<>();
+        if (Files.exists(filePath)) Collections.addAll(linhas, readFile(filePath));
 
         for (int i = 1; i < linhas.size(); i++) {
             if (linhas.get(i).startsWith(className) && linhas.get(i).endsWith("," + phraseSize)) {
@@ -244,7 +247,7 @@ public class FileUtils {
      */
     public static void saveFileContent(Path caminho, List<String> linhas) {
         try {
-            Files.write(caminho, linhas, StandardCharsets.UTF_8);
+            Files.write(caminho, linhas, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
         } catch (IOException e) {
             System.err.println("Erro ao salvar o arquivo: " + caminho);
             System.exit(1);
