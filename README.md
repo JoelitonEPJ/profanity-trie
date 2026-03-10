@@ -112,6 +112,22 @@ O tema discutido vem se tornando cada vez mais relevante nos dias atuais, visto 
 
 ### Baseline
 
+O Baseline (ou implementação "ingênua") representa a abordagem mais simples e direta possível para a resolução do problema de filtragem de palavras. Ele serve como uma linha de base, um ponto de referência para avaliar se o custo de desenvolvimento e o consumo de recursos de estruturas mais complexas (como as outras estruturas e implementações) realmente se justificam frente aos resultados obtidos.
+
+- Funcionamento do Algoritmo:
+A implementação desenvolvida para o Baseline não utiliza estruturas de dados avançadas para buscas de texto, baseando-se apenas em um array simples de strings (String[]) para armazenar a lista negra (blacklist) de palavras ofensivas. O verificação funciona da seguinte maneira:
+
+1. Separação da frase (Tokenização): Quando a função hasBadWord recebe uma frase, ela a divide em um array de palavras independentes.
+
+2. Busca Linear (Linear Search): O algoritmo itera sobre cada palavra da frase tokenizada e, para cada uma delas, invoca o método isBadWord. Este método percorre sequencialmente todo o array de palavras ofensivas, realizando uma comparação através do método .equals(). E ao final, retorna a quantidade de palavras que são consideradas `bad` (estão presentes na blacklist).
+
+- Análise e Contextualização:
+Este método é considerado "ingênuo" principalmente devido à sua ineficiência durante a busca. Para uma frase contendo N palavras e uma blacklist com M palavras ofensivas, a complexidade computacional seria de O(n * m) verificando cada palavra com toda a blacklist.
+
+Além disso, o Baseline se torna altamente suscetível a falsos negativos. Ele é incapaz de detectar variações triviais de uma ofensa (como diferenças de capitalização ou o uso de caracteres da tabela L33T), a menos que cada uma dessas variações esteja explicitamente adicionada na blacklist.
+
+Apesar dessas fraquezas evidentes na capacidade de detecção e velocidade em entradas grandes, o Baseline deve apresentar um consumo de memória extremamente baixo, servindo como o limite inferior ideal para os experimentos propostos.
+
 ---
 
 ### HashTable
@@ -167,7 +183,7 @@ Dadas as palavras ofensivas separadas por nós, queremos comparar quanto tempo l
 
 **2. Consumo de Memória**
 
-Iremos comparar o consumo de memória de cada método em sua lotação máxima. Para isso, planejamos utilizar a biblioteca JOL (Java Object Layout) que consegue analisar o `footprint` de cada objeto.
+
 
 **3. Velocidade para entradas grandes**
 
@@ -191,6 +207,8 @@ Finalmente, iremos comparar a capacidade de detecção de profanidades de cada m
 
 - [Carlos Arthur Nóbrega Soares](https://github.com/C-Arthurr)
 
-- [Joéliton Elias Pereira Júnior](https://github.com/JoelitonEPJ)
-
 - [Gabriel Victor de Sousa Lima](https://github.com/gvsl60)
+
+- [Joéliton Elias Pereira Junior](https://github.com/JoelitonEPJ)
+
+Projeto feito como trabalho final da disciplina de Estrutura de Dados e Algoritmos (EDA) e Laboratório de Estrutura de Dados e Algoritmos (LEDA) da graduação em Ciência da Computação na Universidade Federal de Campina Grande (UFCG) no período 2025.2.
