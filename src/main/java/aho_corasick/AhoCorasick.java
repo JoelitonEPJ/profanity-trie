@@ -29,6 +29,7 @@ public class AhoCorasick {
     private void insert(String s) {
         Node curr = root;
         for (char c : s.toCharArray()) {
+            c = Character.toLowerCase(c);
             int idx = c - 'a';
             if (idx < 0 || idx >= 26) continue;
             if (curr.next[idx] == null) curr.next[idx] = new Node();
@@ -90,14 +91,14 @@ public class AhoCorasick {
         List<String> results = new ArrayList<>();
         results.add(""); 
 
-        for (char c : text.toLowerCase().toCharArray()) {
-            char target = c;
+        for (char c : text.toCharArray()) {
+            char target = Character.toLowerCase(c);
             List<Character> options = new ArrayList<>();
 
-            if (leetMap.containsKey(c)) {
-                options.addAll(leetMap.get(c));
-            } else if (c >= 'a' && c <= 'z') {
-                options.add(c);
+            if (leetMap.containsKey(target)) {
+                options.addAll(leetMap.get(target));
+            } else if (target >= 'a' && target <= 'z') {
+                options.add(target);
             } else {
                 continue;
             }
@@ -117,7 +118,8 @@ public class AhoCorasick {
         if (word == null || word.isEmpty()) return false;
 
         Node curr = root;
-        for (char c : word.toLowerCase().toCharArray()) {
+        for (char c : word.toCharArray()) {
+            c = Character.toLowerCase(c);
             int idx = c - 'a';
             
             if (idx < 0 || idx >= 26 || curr.next[idx] == null || curr.next[idx] == root) {
