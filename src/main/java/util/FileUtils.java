@@ -47,6 +47,9 @@ public class FileUtils {
                 if (linha == null) {
                     break;
                 }
+                if (linha.isEmpty()) {
+                    continue;
+                }
                 lista.add(linha);
             }
         } catch (IOException e) {
