@@ -33,7 +33,7 @@ def gera_frases(tam_frases):
 
         with open(DATA_DIR/"sentences"/arquivo, "w", newline="", encoding="utf-8") as arq_csv:
             writer = csv.writer(arq_csv, delimiter=",")
-            writer.writerow(["frase", "qtd_bad_words", "modificadores"])
+            writer.writerow(["frase", "qtd_bad_words", "modificador"])
             for _ in range(QUANT_FRASES_DEFAULT):
                 mod = select_modifier() # lista de modificadores dessa frase
 
