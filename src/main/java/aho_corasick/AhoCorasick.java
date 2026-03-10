@@ -1,134 +1,197 @@
 package aho_corasick;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-public class AhoCorasick {
+public final class AhoCorasick {
     private final Node root;
+    private final String[] patterns;
     private final Map<Character, ArrayList<Character>> leetMap;
-
-    private static class Node {
-        Node[] next = new Node[26];
-        Node fail;
-        Node dictLink;
-        String word; 
-    }
 
     public AhoCorasick(String[] words, Map<Character, ArrayList<Character>> leetMap) {
         this.root = new Node();
+        this.patterns = words;
         this.leetMap = leetMap;
-        for (String s : words) {
-            insert(s);
-        }
-        build();
+
+        buildTrie();
+        buildSuffixAndOutputLinks();
     }
 
-    private void insert(String s) {
-        Node curr = root;
-        for (char c : s.toCharArray()) {
-            c = Character.toLowerCase(c);
-            int idx = c - 'a';
-            if (idx < 0 || idx >= 26) continue;
-            if (curr.next[idx] == null) curr.next[idx] = new Node();
-            curr = curr.next[idx];
-        }
-        curr.word = s;
-    }
-
-    private void build() {
-        Queue<Node> q = new ArrayDeque<>();
-        for (int i = 0; i < 26; i++) {
-            if (root.next[i] != null) {
-                root.next[i].fail = root;
-                q.add(root.next[i]);
-            } else {
-                root.next[i] = root;
-            }
-        }
-
-        while (!q.isEmpty()) {
-            Node curr = q.poll();
-            for (int i = 0; i < 26; i++) {
-                if (curr.next[i] != null) {
-                    Node child = curr.next[i];
-                    child.fail = curr.fail.next[i];
-                    child.dictLink = (child.fail.word != null) ? child.fail : child.fail.dictLink;
-                    q.add(child);
-                } else {
-                    curr.next[i] = curr.fail.next[i];
-                }
-            }
-        }
-    }
-
-    public int countBadWords(String text) {
-        if (text == null) return 0;
-        
-        int count = 0;
-        List<String> variations = generateCleanTexts(text);
-
-        for (String variant : variations) {
+    
+    private void buildTrie() {
+        for (int i = 0; i < patterns.length; i++) {
             Node curr = root;
-            for (char c : variant.toCharArray()) {
-                int idx = c - 'a';
-                if (idx < 0 || idx >= 26) continue;
-
-                curr = curr.next[idx];
-                Node temp = (curr.word != null) ? curr : curr.dictLink;
-                while (temp != null) {
-                    count++;
-                    temp = temp.dictLink;
+            
+            for (int j = 0; j < patterns[i].length(); j++) {
+                char c = patterns[i].charAt(j);
+                
+                if (!curr.child.containsKey(c)) {
+                    curr.child.put(c, new Node());
                 }
+
+                curr = curr.child.get(c);
+            }
+            curr.patternInd = i;
+        }
+    }
+    
+    private void buildSuffixAndOutputLinks() {
+        root.suffixLink = root;
+        Queue<Node> q = new LinkedList<>();
+        
+        for (char rc : root.child.keySet()) {
+            Node childNode = root.child.get(rc);
+            q.add(childNode);
+            childNode.suffixLink = root;
+        }
+        
+        while (!q.isEmpty()) {
+            Node currentState = q.poll();
+            
+            for (char cc : currentState.child.keySet()) {
+                Node currentChild = currentState.child.get(cc);
+                Node parentSuffix = currentState.suffixLink;
+                
+                while (!parentSuffix.child.containsKey(cc) && parentSuffix != root) {
+                    parentSuffix = parentSuffix.suffixLink;
+                }
+                
+                if (parentSuffix.child.containsKey(cc)) {
+                    currentChild.suffixLink = parentSuffix.child.get(cc);
+                } else {
+                    currentChild.suffixLink = root;
+                }
+
+                
+                if (currentChild.suffixLink.patternInd >= 0) {
+                    currentChild.outputLink = currentChild.suffixLink;
+                } else {
+                    currentChild.outputLink = currentChild.suffixLink.outputLink;
+                }
+                
+                q.add(currentChild);
             }
         }
-        return count;
     }
-
-    public List<String> generateCleanTexts(String text) {
-        List<String> results = new ArrayList<>();
-        results.add(""); 
-
-        for (char c : text.toCharArray()) {
-            char target = Character.toLowerCase(c);
-            List<Character> options = new ArrayList<>();
-
-            if (leetMap.containsKey(target)) {
-                options.addAll(leetMap.get(target));
-            } else if (target >= 'a' && target <= 'z') {
-                options.add(target);
-            } else {
-                continue;
-            }
-
-            List<String> nextResults = new ArrayList<>();
-            for (String s : results) {
-                for (char opt : options) {
-                    nextResults.add(s + opt);
-                }
-            }
-            results = nextResults;
-        }
-        return results;
-    }
-
-    public boolean isBadWord(String word) {
-        if (word == null || word.isEmpty()) return false;
-
+    
+    
+    public List<List<Integer>> searchIn(final String text) {
+        List<List<Integer>> positionByStringIndexValue = initializePositionByStringIndexValue();
         Node curr = root;
-        for (char c : word.toCharArray()) {
-            c = Character.toLowerCase(c);
-            int idx = c - 'a';
+        
+        PatternPositionRecorder positionRecorder = new PatternPositionRecorder(positionByStringIndexValue);
+        
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
             
-            if (idx < 0 || idx >= 26 || curr.next[idx] == null || curr.next[idx] == root) {
-                return false;
+            while (curr != root && !curr.child.containsKey(ch)) {
+                curr = curr.suffixLink;
             }
             
-            curr = curr.next[idx];
+            if (curr.child.containsKey(ch)) {
+                curr = curr.child.get(ch);
+                positionRecorder.recordPatternPositions(curr, i);
+            }
         }
+        
+        setUpStartPoints(positionByStringIndexValue);
+        return positionByStringIndexValue;
+    }
+    
+    private List<List<Integer>> initializePositionByStringIndexValue() {
+        List<List<Integer>> positionByStringIndexValue = new ArrayList<>(patterns.length);
+        for (int i = 0; i < patterns.length; i++) {
+            positionByStringIndexValue.add(new ArrayList<>());
+        }
+        return positionByStringIndexValue;
+    }
+    
+    private void setUpStartPoints(List<List<Integer>> positionByStringIndexValue) {
+        for (int i = 0; i < patterns.length; i++) {
+            List<Integer> positions = positionByStringIndexValue.get(i);
+            int patternLength = patterns[i].length();
+            for (int j = 0; j < positions.size(); j++) {
+                int endpoint = positions.get(j);
+                positions.set(j, endpoint - patternLength + 1);
+            }
+        }
+    }
+    
+    private static class PatternPositionRecorder {
+        
+        private final List<List<Integer>> positionByStringIndexValue;
+        
+        PatternPositionRecorder(List<List<Integer>> positionByStringIndexValue) {
+            this.positionByStringIndexValue = positionByStringIndexValue;
+        }
+        
+        public void recordPatternPositions(final Node parent, final int currentPosition) {
+            if (parent.patternInd > -1) {
+                positionByStringIndexValue.get(parent.patternInd).add(currentPosition);
+            }
+            
+            Node outputLink = parent.outputLink;
+            while (outputLink != null) {
+                positionByStringIndexValue.get(outputLink.patternInd).add(currentPosition);
+                outputLink = outputLink.outputLink;
+            }
+        }
+    }
+    
+    private static class Node {
+        final Map<Character, Node> child = new HashMap<>();
+        Node suffixLink;
+        Node outputLink;
+        int patternInd;
+    
+        Node() {
+            this.suffixLink = null;
+            this.outputLink = null;
+            this.patternInd = -1;
+        }
+    }
 
-        return curr.word != null;
+    public static void main(String[] args) {
+        // 1. Definir os padrões que queremos encontrar
+        String[] patterns = {"he", "she", "hers", "his"};
+        
+        // 2. Criar o mapa de Leet Speak (vazio por enquanto, já que a lógica ainda é literal)
+        Map<Character, ArrayList<Character>> leetMap = new HashMap<>();
+
+        // 3. Inicializar a Aho-Corasick
+        System.out.println("--- Inicializando Aho-Corasick ---");
+        AhoCorasick aho = new AhoCorasick(patterns, leetMap);
+
+        // 4. Texto de teste
+        // "ushers" contém "she" e "he"
+        // "his" contém "his"
+        String text = "ushershis";
+        System.out.println("Buscando em: \"" + text + "\"");
+
+        // 5. Executar a busca
+        List<List<Integer>> results = aho.searchIn(text);
+
+        // 6. Exibir os resultados de forma legível
+        System.out.println("\n--- Resultados Encontrados ---");
+        for (int i = 0; i < patterns.length; i++) {
+            String word = patterns[i];
+            List<Integer> positions = results.get(i);
+            
+            if (positions.isEmpty()) {
+                System.out.println("Palavra '" + word + "': Nenhuma ocorrência.");
+            } else {
+                System.out.println("Palavra '" + word + "': Encontrada nas posições " + positions);
+                
+                // Validação visual
+                for (int pos : positions) {
+                    String substring = text.substring(pos, pos + word.length());
+                    System.out.println("   -> Confirmado em [" + pos + "]: " + substring);
+                }
+            }
+        }
     }
 }
