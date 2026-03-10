@@ -115,6 +115,7 @@ O tema discutido vem se tornando cada vez mais relevante nos dias atuais, visto 
 O Baseline (ou implementação "ingênua") representa a abordagem mais simples e direta possível para a resolução do problema de filtragem de palavras. Ele serve como uma linha de base, um ponto de referência para avaliar se o custo de desenvolvimento e o consumo de recursos de estruturas mais complexas (como as outras estruturas e implementações) realmente se justificam frente aos resultados obtidos.
 
 #### Funcionamento do Algoritmo
+
 A implementação desenvolvida para o Baseline não utiliza estruturas de dados avançadas para buscas de texto, baseando-se apenas em um array simples de strings (String[]) para armazenar a lista negra (blacklist) de palavras ofensivas. O verificação funciona da seguinte maneira:
 
 1. **Separação da frase (Tokenização)**: Quando a função hasBadWord recebe uma frase, ela a divide em um array de palavras independentes.
@@ -132,7 +133,7 @@ Apesar dessas fraquezas evidentes na capacidade de detecção e velocidade em en
 
 ### HashTable
 
-A estrutura de HashTable introduz uma melhoria significativa na etapa de busca de palavras em relação ao Baseline. No contexto do projeto, foi utilizada a implementação HashSet da biblioteca padrão do Java. Essa estrutura se destaca por oferer uma complexidade de tempo média constante para inserções e buscas rápidas.
+A estrutura de HashTable introduz uma melhoria significativa na etapa de busca de palavras em relação ao Baseline. No contexto do projeto, foi utilizada a implementação HashSet da biblioteca padrão do Java. Essa estrutura se destaca por oferecer uma complexidade de tempo média constante para inserções e buscas rápidas.
 
 #### Funcionamento do Algoritmo
 
@@ -144,15 +145,15 @@ A implementação da HashTable para este filtro foca na velocidade de verificaç
 
 3. **Busca e contagem de ocorrências**: O algoritmo itera sobre cada palavra da frase e utiliza o método .contains() do HashSet para verificar sua presença na blacklist. O Java calcula o hash da palavra e busca diretamente no endereçamento da memória, evitando a necessidade de percorrer a blacklist inteira. Se a palavra for ofensiva, uma variável de contagem é incrementada e seu valor final é retornado.
 
-#### Análise e Contextualização no Projeto
+#### Análise e Contextualização
 
 A principal vantagem da HashTable deverá ser evidenciada no teste de "Velocidade para entradas grandes". Enquanto o Baseline possui uma desvantagem ao verificar elemento por elemento, a HashTable manterá um desempenho de verificação extremamente rápido, sendo pouco impactada pelo crescimento do tamanho da blacklist.
 
 Apesar da velocidade superior de busca, a estrutura traz trade-offs importantes que serão explorados nos demais testes:
 
-Consumo de Memória: É esperado que a HashTable apresente um custo de memória notavelmente maior que o Baseline. Isso acontece porque a estrutura exige mais memória para organizar suas tabelas internas e para gerenciar as colisões de dados.
+- **Consumo de Memória**: É esperado que a HashTable apresente um custo de memória notavelmente maior que o Baseline. Isso acontece porque a estrutura exige mais memória para organizar suas tabelas internas e para gerenciar as colisões de dados.
 
-Capacidade de Detecção Limitada: Assim como o Baseline, a HashTable é severamente afetada pela restrição de que a String recebida deve ser idêntica a badword contida no HashMap.
+- **Capacidade de Detecção Limitada**: Assim como o Baseline, a HashTable é severamente afetada pela restrição de que a String recebida deve ser idêntica a badword contida no HashMap.
 
 ---
 

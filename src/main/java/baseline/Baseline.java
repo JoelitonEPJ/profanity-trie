@@ -1,11 +1,13 @@
 package baseline;
 
+import java.util.Arrays;
+
 public class Baseline {
     
     private String[] badWords;
 
     public Baseline(String[] badWords){
-        this.badWords = badWords;
+        this.badWords = Arrays.copyOf(badWords, badWords.length);
     }
 
     public boolean isBadWord(String palavra){
