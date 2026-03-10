@@ -1,10 +1,14 @@
 package aho_corasick;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 public class AhoCorasick {
     private final Node root;
+    private final Map<Character, ArrayList<Character>> leetMap;
 
     private static class Node {
         Node[] next = new Node[26];
@@ -13,8 +17,9 @@ public class AhoCorasick {
         String word; 
     }
 
-    public AhoCorasick(String[] words) {
+    public AhoCorasick(String[] words, Map<Character, ArrayList<Character>> leetMap) {
         this.root = new Node();
+        this.leetMap = leetMap;
         for (String s : words) {
             insert(s);
         }
@@ -62,32 +67,57 @@ public class AhoCorasick {
         if (text == null) return 0;
         
         int count = 0;
-        Node curr = root;
+        List<String> variations = generateCleanTexts(text);
 
-        for (int i = 0; i < text.length(); i++) {
-            int idx = text.charAt(i) - 'a';
+        for (String variant : variations) {
+            Node curr = root;
+            for (char c : variant.toCharArray()) {
+                int idx = c - 'a';
+                if (idx < 0 || idx >= 26) continue;
 
-            if (idx < 0 || idx >= 26) {
-                curr = root;
-                continue;
-            }
-
-            curr = curr.next[idx];
-
-            Node temp = (curr.word != null) ? curr : curr.dictLink;
-            while (temp != null) {
-                count++;
-                temp = temp.dictLink;
+                curr = curr.next[idx];
+                Node temp = (curr.word != null) ? curr : curr.dictLink;
+                while (temp != null) {
+                    count++;
+                    temp = temp.dictLink;
+                }
             }
         }
         return count;
+    }
+
+    public List<String> generateCleanTexts(String text) {
+        List<String> results = new ArrayList<>();
+        results.add(""); 
+
+        for (char c : text.toLowerCase().toCharArray()) {
+            char target = c;
+            List<Character> options = new ArrayList<>();
+
+            if (leetMap.containsKey(c)) {
+                options.addAll(leetMap.get(c));
+            } else if (c >= 'a' && c <= 'z') {
+                options.add(c);
+            } else {
+                continue;
+            }
+
+            List<String> nextResults = new ArrayList<>();
+            for (String s : results) {
+                for (char opt : options) {
+                    nextResults.add(s + opt);
+                }
+            }
+            results = nextResults;
+        }
+        return results;
     }
 
     public boolean isBadWord(String word) {
         if (word == null || word.isEmpty()) return false;
 
         Node curr = root;
-        for (char c : word.toCharArray()) {
+        for (char c : word.toLowerCase().toCharArray()) {
             int idx = c - 'a';
             
             if (idx < 0 || idx >= 26 || curr.next[idx] == null || curr.next[idx] == root) {
