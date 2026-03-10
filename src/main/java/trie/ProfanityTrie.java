@@ -16,33 +16,60 @@ public class ProfanityTrie {
     }
 
     public void addWords(String text, int index){
-            Node current = root;
-            int nodeCounting = 0;
+        Node current = root;
+        int nodeCounting = 0;
     
-            for (char caracter : text.toCharArray()){
-                current.childs.putIfAbsent(caracter, new Node());
-                current = current.childs.get(caracter);
-
-                current.counting++;
-                nodeCounting++;
-
-                if (nodeCounting == index){
-                    current.isBadNode = true;
-                }
+        for (char caracter : text.toCharArray()){
+            if (caracter == '-') {
+                 continue;
             }
+
+            current.childs.putIfAbsent(caracter, new Node());
+            current = current.childs.get(caracter);
+
+            current.counting++;
+            nodeCounting++;
+
+            if (nodeCounting == index){
+                current.isBadNode = true;
+            }
+        }
 
             current.end = true;
         }
     
     public int countBadWords(String phrase){
-            int count = 0;
-            String[] words = phrase.split(" ");
-            
-            for (String x : words){
-                if (checkIsBadWord(x)) count++;
+        int count = 0;
+        int size = phrase.length();
+
+        for (int i = 0; i < size; i++){
+            Node current = root;
+            int lastMatchIndex = -1;
+
+            for (int j = i; j < size; j++){
+                char caracter = phrase.charAt(j);
+                
+                if (caracter == '-'){
+                    continue;
+                }
+
+                current = current.childs.get(caracter);
+
+                if (current == null){
+                    break;
+                }
+
+                if (current.isBadNode || current.end){
+                    lastMatchIndex = j;
+                }
             }
 
-            return count;
+            if (lastMatchIndex != -1){
+                count++;
+                i = lastMatchIndex;
+            }
+        }
+        return count;
     }
     
 
@@ -50,6 +77,11 @@ public class ProfanityTrie {
         Node current = root;
         
         for (char caracter : alvo.toCharArray()){
+
+            if (caracter == '-'){
+                continue;
+            }
+
             current = current.childs.get(caracter);
 
             if (current == null) return false;
