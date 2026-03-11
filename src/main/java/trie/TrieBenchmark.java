@@ -1,23 +1,41 @@
 package trie;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import util.BenchmarkConfig;
+import util.Pair;
+import util.FileUtils;
 
 public class TrieBenchmark extends BenchmarkConfig {
-    Trie trie;
+
+    private Trie benchmarkTrie;
+    private Map<Character, ArrayList<Character>> leetMap;
+
+    @Override
+    public void setUp() {
+        super.setUp();
+        leetMap = FileUtils.readCsvLeetToCharMap();
+    }
 
     @Override
     public void addWords(String[] words) {
-        trie = new Trie(words);
+        benchmarkTrie = new Trie(words, leetMap);
+    }
+
+    @Override
+    public void addWords(Pair<String, Integer>[] wordsFirstPrefix) {
+        benchmarkTrie = new Trie(wordsFirstPrefix, leetMap);
     }
 
     @Override
     public int countBadWords(String phrase) {
-        return trie.countBadWords(phrase);
+        return benchmarkTrie.countBadWords(phrase);
     }
 
     @Override
     public boolean checkIsBadWord(String word) {
-        return trie.checkIsBadWord(word);
+        return benchmarkTrie.checkIsBadWord(word);
     }
 }
 

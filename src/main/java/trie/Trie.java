@@ -1,107 +1,135 @@
 package trie;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import util.Pair;
 
 public class Trie {
 
     private final Node root;
+    private final Map<Character, ArrayList<Character>> leetMap;
 
-    public Trie (){
+    public Trie(Map<Character, ArrayList<Character>> leetMap){
         this.root = new Node();
+        this.leetMap = leetMap;
     }
 
-    public Trie(String[] words){
+    public Trie(String[] words, Map<Character, ArrayList<Character>> leetMap){
         this.root = new Node();
-        for (int i = 0; i < words.length; i++) addWords(words[i], -1);
+        this.leetMap = leetMap;
+        for (int i = 0; i < words.length; i++) {
+            addWord(words[i], -1);
+        }
     }
 
-    public void addWords(String text, int index){
-        Node current = root;
+    public Trie(Pair<String, Integer>[] wordsFirstPrefix, Map<Character, ArrayList<Character>> leetMap){
+        this.root = new Node();
+        this.leetMap = leetMap;
+        for (Pair<String, Integer> word : wordsFirstPrefix) {
+            addWord(word.first(), word.second());
+        }
+    }
+
+    public void addWord(String text, int index){
+        Node current = this.root;
         int nodeCounting = 0;
     
         for (char caracter : text.toCharArray()){
             if (caracter == '-') {
-                 continue;
+                continue;
             }
 
             current.childs.putIfAbsent(caracter, new Node());
             current = current.childs.get(caracter);
 
-            current.counting++;
             nodeCounting++;
 
-            if (nodeCounting == index){
+            if (nodeCounting == index) {
                 current.isBadNode = true;
             }
         }
 
-            current.end = true;
-        }
+        current.end = true;
+    }
     
     public int countBadWords(String phrase){
         int count = 0;
         int size = phrase.length();
 
-        for (int i = 0; i < size; i++){
-            Node current = root;
+        for (int i = 0; i < size; i++) {
+            Node current = this.root;
             int lastMatchIndex = -1;
 
-            for (int j = i; j < size; j++){
+            for (int j = i; j < size; j++) {
                 char caracter = phrase.charAt(j);
                 
-                if (caracter == '-'){
+                if (caracter == '-') {
                     continue;
                 }
 
                 current = current.childs.get(caracter);
 
-                if (current == null){
+                if (current == null) {
                     break;
                 }
 
-                if (current.isBadNode || current.end){
+                if (current.isBadNode || current.end) {
                     lastMatchIndex = j;
                 }
             }
 
-            if (lastMatchIndex != -1){
+            if (lastMatchIndex != -1) {
                 count++;
                 i = lastMatchIndex;
             }
         }
+        
         return count;
     }
-    
 
-    public boolean checkIsBadWord(String alvo){
-        Node current = root;
-        
-        for (char caracter : alvo.toCharArray()){
+    public boolean checkIsBadWord(String word) {
+        return checkIsBadWord(word, 0, this.root);
+    }
 
-            if (caracter == '-'){
-                continue;
-            }
+    private boolean checkIsBadWord(String word, int index, Node nodeAtual) {
 
-            current = current.childs.get(caracter);
+        if (nodeAtual == null) return false;
 
-            if (current == null) return false;
+        if (nodeAtual.isBadNode) return true;
 
-            if (current.isBadNode) return true;
+        if (index == word.length()) return nodeAtual.end; 
+
+        char caracter = Character.toLowerCase(word.charAt(index));
+
+        if (leetMap.get(caracter) == null) {
+            return checkIsBadWord(word, index + 1, nodeAtual);
         }
 
-        return current.end;
+        ArrayList<Character> possibilidades = leetMap.get(caracter);
+        
+        for (char letraASeguir : possibilidades) {
+            Node proximoNo = nodeAtual.childs.get(letraASeguir);
+    
+            if (checkIsBadWord(word, index + 1, proximoNo)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
+
+
     private static class Node {
+
         boolean end;
         boolean isBadNode;
-        int counting;
         HashMap<Character,Node> childs;
 
         public Node(){
             this.end = false;
-            this.counting = 0;
-            this.childs = new HashMap<>();
             this.isBadNode = false;
+            this.childs = new HashMap<>();
         }
     }    
 }
