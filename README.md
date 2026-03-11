@@ -239,7 +239,7 @@ Os experimentos de comparação entre os métodos de filtragem foram divididos d
 
 **1. Velocidade de Inserção**
 
-Dadas as palavras ofensivas separadas por nós, queremos comparar quanto tempo levará para cada método conseguir processá-las. Em um cenário real, seria necessário sempre carregar as palavras ao iniciar a aplicação, logo, é necessário saber quais possuem uma performance melhor que não atrapalhe a experiência do usuários
+
 
 **2. Consumo de Memória**
 
@@ -247,11 +247,11 @@ Dadas as palavras ofensivas separadas por nós, queremos comparar quanto tempo l
 
 **3. Velocidade para entradas grandes**
 
-Dadas "sentenças" geradas aleatoriamente, iremos comparar a velocidade de processamento de cada método para analisar a sua viabilidade em aplicações em tempo real.
+
 
 **4. Capacidade de detecção**
 
-Finalmente, iremos comparar a capacidade de detecção de profanidades de cada método, analisando seu desempenho com entradas "complicadas", tentando forçar falsos positivos/negativos.
+
 
 ## Conclusão
 
@@ -261,7 +261,7 @@ Finalmente, iremos comparar a capacidade de detecção de profanidades de cada m
 2. Benchmarks dependem fortemente do Hardware, Sistema Operacional, implementação da JVM e configurações da máquina virtual. Mesmo utilizando JMH para tentar minimizar erros pontuais, resultados podem variar se replicados em arquiteturas diferentes.
 3. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho de memória do Regex e de busca da HashTable. Em aplicações reais, uma restrição desse tipo não existiria e ambas as estruturas teriam uma performance melhor
 
-> experimento extra de detecção de palavras para testar isso?????
+> experimento extra de detecção de palavras para testar isso?
 
 ## Trabalhos Futuros
 
