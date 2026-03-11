@@ -12,6 +12,8 @@ Implementação, documentação e comparação da Trie e outros métodos para a 
 
 - [Estruturas e Algoritmos](#estruturas-e-algoritmos)
 
+- [Como rodar o experimento?](#como-rodar-o-experimento)
+
 - [Metodologia](#metodologia)
 
 - [Experimentos](#experimentos)
@@ -20,7 +22,7 @@ Implementação, documentação e comparação da Trie e outros métodos para a 
 
 - [Ameaças à validade](#ameaças-à-validade)
 
-- [Projetos Futuros](#projetos-futuros)
+- [Trabalhos Futuros](#trabalhos-futuros)
 
 - [Contribuintes](#contribuintes)
 
@@ -70,7 +72,7 @@ O diretório `scripts` contém scripts escritos na linguagem Python utilizados p
 
 Já o diretório `src` contém a implementação em Java dos métodos de filtragem escolhidos, nomeadamente: **Aho-Corasick**, **HashTable**, **Regex**, **Trie**, além de conter o baseline, a implementação "ingênua", que serve como ponto de referência base para os outros métodos.
 
-O arquivo `run-benchmark.sh` foi utilizado para rodar o projeto de maneira simples. Ele é responsável por criar os diretórios necessários e fazer o pré-processamento necessário para rodar as comparações. Para mais informações, é possível rodá-lo com as flags `-h`/`--help` para entender melhor como ele funciona.
+O arquivo `run-benchmark.sh` foi utilizado para rodar o projeto de maneira simples. Ele é responsável por criar os diretórios necessários e fazer o pré-processamento necessário para rodar as comparações.
 
 ## Introdução
 
@@ -88,7 +90,7 @@ Porém, mesmo com a grande relevância dessa ferramenta, ainda não existe um me
 
 ### Escopo
 
-A filtragem de palavras ofensivas é um tema bem complexo com muitos assuntos que podem se ramificar em diversos projetos diferentes. Dessa forma, nós tivemos o cuidado de definir bem o escopo desse projeto de antemão, de forma que fosse possível discutir e analisar de maneira completa o tema proposto por uma das vias.
+A filtragem de palavras ofensivas é um tema bem complexo com muitos assuntos que podem se ramificar em diversos projetos diferentes. Por isso, nós tivemos o cuidado de definir bem o escopo desse projeto de antemão, de forma que fosse possível discutir e analisar de maneira completa o tema proposto por uma das vias.
 
 Dessa forma, tendo essa problemática em mente e considerando que a estrutura base de análise desse projeto inicialmente escolhido era a **Trie**, decidimos focar nos métodos relacionados ao uso de blacklists para realizar essa filtragem, logo, nosso projeto discutirá os seguintes métodos: **Aho-Corasick**, **HashTable**, **Trie** e **Regex**.
 
@@ -123,6 +125,7 @@ A implementação desenvolvida para o Baseline não utiliza estruturas de dados 
 2. **Busca Linear (Linear Search)**: O algoritmo itera sobre cada palavra da frase tokenizada e, para cada uma delas, invoca o método isBadWord. Este método percorre sequencialmente todo o array de palavras ofensivas, realizando uma comparação através do método .equals(). E ao final, retorna a quantidade de palavras que são consideradas `bad` (estão presentes na blacklist).
 
 #### Análise e Contextualização
+
 Este método é considerado "ingênuo" principalmente devido à sua ineficiência durante a busca. Para uma frase contendo N palavras e uma blacklist com M palavras ofensivas, a complexidade computacional seria de O(n · m) verificando cada palavra com toda a blacklist.
 
 Além disso, o Baseline se torna altamente suscetível a falsos negativos. Ele é incapaz de detectar variações triviais de uma ofensa (como diferenças de capitalização ou o uso de caracteres da tabela L33T), a menos que cada uma dessas variações seja explicitamente adicionada na blacklist.
@@ -165,17 +168,29 @@ Apesar da velocidade superior de busca, a estrutura traz trade-offs importantes 
 
 ---
 
+## Como rodar o experimento?
+
+```shell
+$ ./run-benchmark.sh
+```
+
+Para mais informações, rode `./run-benchmark.sh --help`. 
+
 ## Metodologia
 
-Nesse sentido, os passos seguidos para a execução desse experimento foram os seguintes:
+Nesse contexto, os passos para a execução desse experimento foram os seguintes:
 
-### 1. Definição dos métodos de filtragem
+### 1. Definição da estratégia e métodos de filtragem
 
+A intenção inicial do projeto foi analisar a Trie em um contexto prático do mundo real. Durante a etapa de levantamento de possíveis aplicações que o uso dessa estrutura poderia trazer benefícios, foi observado um interesse crescente na moderação de conteúdo em ambientes digitais, de forma que leis que visam proteger crianças e adolescentes durante o consumo de conteúdo em ambientes digitais vêm sendo cada vez mais discutidas. Partindo desses dois príncipios, foi identificado um ponto "em aberto" relacionado à moderação de conteúdo nas plataformas digitais: _como realizar a filtragem de conteúdo ofensivo de uma maneira eficiente?_
 
+Considerando a proposta da Trie de ser uma estrutura eficiente de busca e recuperação em grandes volumes de conteúdo, foi definido que os filtros deveriam ser baseados na estratégia de blacklists discutidas anteriormente. Com isso, foram escolhidos outros métodos comumente utilizados para esse tipo de problema: **Aho-Corasick**, **HashTable** e **Regex**, notoriamente conhecidos por sua eficiência na busca.
+
+Além disso, como métrica base de comparação (Baseline), foi implementado um simples filtro baseado em array, com tempo de busca linear.
 
 ### 2. Busca por Blacklists
 
-- pesquisa no github por listas palavras ofensivas, resultados:
+O próximo passo foi procurar listas de palavras banidas para formar um catálogo próprio de experimentação. Para isso, a principal fonte foi o GitHub, que contém diversos projetos que mantém catálogos de palavras ofensivas. Os seguintes projetos foram utilizados para montar a coleção de "bad words" para esse projeto: 
   - [Cuss Words](https://github.com/words/cuss/blob/main/pt.js)
   - [Bad Words](https://github.com/Kuyoku-san/Badwords/blob/main/badwords.txt)
   - [Chat Detox](https://github.com/dunossauro/chat-detox/blob/main/palavras.txt)
@@ -184,17 +199,39 @@ Nesse sentido, os passos seguidos para a execução desse experimento foram os s
   - [Content Moderation](https://github.com/bielgennaro/content-moderation/blob/main/src/dictionaries/pt-br.ts)
   - [Word List for speech recognition subtitling](https://github.com/sayonari/goodBadWordlist/blob/main/pt/BadList.txt)
 
-- pesquisa por possíveis codificações simples para letras:
-  - [Tabela L33T](https://pt.wikipedia.org/wiki/Leet#Tabela_do_alfabeto_leet)
+Durante a análise, foi possível notar que muitas listas possuem variações [Leet](https://pt.wikipedia.org/wiki/Leet) da mesma palavra, o que consumiria mais memória para armazenar todas as palavras nas estruturas estudadas. Para evitar isso, foi criada uma tabela customizada que relaciona caracteres usuais com variações leet/acentuações comuns, permitindo uma maior customização na detecção de palavras.
+
+Por fim, foi criado também um conjunto de good words, retirado do dicionário brasileiro de Linux, disponível 
+
+### 3. Implementação dos métodos
 
 
-### 3. Geração das cargas de teste (entrada)
 
-Após separar as palavras que servirão de entrada, nós fizemos um "cleanup", removendo duplicatas e normalizando elas para ascii. Com isso, salvamos as palavras no arquivo [Formatted Bad Words](./data/bad_words/formatted.csv).
+### 4. Geração das cargas de teste
 
-Através dele, criaremos as entradas que servirão para os diferentes experimentos de forma programática, utilizando scripts na linguagem python
+As cargas de teste correspondem às palavras/frases que serão avaliadas por cada estrutura e foram geradas por meio de scripts em python. As etapas para a geração das entradas foram:
 
-### 4. Análise de Desempenho das estruturas em diferentes contextos
+- **Limpeza e filtragem das palavras "ruins" e "boas"**: O primeiro passo envolveu a formatação das palavras, de forma a retirar codificações e acentuações, e remover palavras repetidas. Além disso, para cada conjunto de palavras, foram feitos alguns processamentos adicionais:
+
+  - **Bad Words**: com o propósito de implementar uma Trie que conseguisse identificar mais rapidamente se uma palavra é ofensiva, o arquivo final de "bad words" contém também um índice que indica, para cada palavra, a partir de qual momento ela difere de uma "good word", ou seja, seus prefixos são certamente diferentes. Existem casos em que não é possível fazer essa distinção, e por isso, o índice salvo é -1, o que indica que ela será ofensiva apenas se for exatamente aquela palavra.
+  - **Good Words**: para simplificar as entradas, as palavras foram filtradas por meio do seu prefixo, mantendo apenas aquelas com o maior tamanho. Através disso, palavras "redundantes" como `computa` foram retiradas do resultado final e `computação` e `computaremos`, por exemplo, mantidas.
+
+- **Geração de frases e palavras aleatórias**: Utilizando as palavras propriamente formatadas, foram geradas frases e palavras geradas de maneira pseudo-aleatórias, utilizando mecanismos disponíveis em Python. Ao fazer isso, cada linha gerada foi categorizada em um dos seguintes tipos:
+  - **None**: Não foi feita nenhuma modificação na entrada.
+  - **Upper**: Algumas letras tiveram alterações na capitalização.
+  - **Spaced**: Foi adicionado espaçamento entre os caracteres.
+  - **Stretched**: Algumas letras foram repetidas.
+  - **Hidden**: Uma palavra normal que possui uma palavra ofensiva "escondida" nela, é o caso do Problema de Scunthorpe discutido anteriormente (falsos positivos)
+
+Isso foi feito para que fosse possível analisar quais métodos têm melhor desempenho em cada categoria.
+
+### 5. Análise de Desempenho
+
+O estudo acerca do desempenho dos métodos de filtragem foi feito utilizando a ferramenta de Benchmark JMH (Java Microbenchmark Harness), para garantir assertividade em relação aos resultados. Isso é possível porque o JMH inicia vários ciclos onde realizará sucessivas vezes as operações que estão sendo testadas e, após isso, irá tirar a média entre as operações.
+
+Além disso, há o uso de outras estratégias para evitar interferências externas, como a execução de séries de aquecimento, com o propósito de minimizar o impacto da lentidão das execuções iniciais, causados pelo lento "startup" da JVM, e o uso de forks, que isola a execução de cada Benchmark, evitando interferências de otimizações anteriores.
+
+Para realizar esse experimento, foram definidos 5 forks onde são realizadas 10 ciclos de medição e 5 ciclos de aquecimento por fork, totalizando 75 ciclos de execução de 5 segundos cada.
 
 ## Experimentos
 
@@ -220,7 +257,17 @@ Finalmente, iremos comparar a capacidade de detecção de profanidades de cada m
 
 ## Ameaças à validade
 
-## Projetos Futuros
+1. O experimento foi conduzido com tamanho máximo de entrada de 10⁵ para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar aproximadamente 10³ elementos, logo, com uma lotação maior, paginação de memória e estratégias de GC podem se tornar mais relevantes e alterar os resultados.
+2. Benchmarks dependem fortemente do Hardware, Sistema Operacional, implementação da JVM e configurações da máquina virtual. Mesmo utilizando JMH para tentar minimizar erros pontuais, resultados podem variar se replicados em arquiteturas diferentes.
+3. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho de memória do Regex e de busca da HashTable. Em aplicações reais, uma restrição desse tipo não existiria e ambas as estruturas teriam uma performance melhor
+
+> experimento extra de detecção de palavras para testar isso?????
+
+## Trabalhos Futuros
+
+- Como distinguido na seção de [Problemática](#problemática), esse projeto se resumiu à comparação entre métodos que utilizam blacklists para detecção e filtragem de palavras ofensivas, deixando de lado a estratégia de análise contextual, que pode trazer benefícios quando comparado ao simples uso de blacklists para categorizar palavras, ignorando o contexto envolvido na conversa. Por isso, seria interessante expandir o experimento para algoritmos que conseguem realizar análises contextuais.
+- Estudar se implementações reduzidas espacialmente da Trie como a [Radix Trie](https://en.wikipedia.org/wiki/Radix_tree) e a [Pruning Radix Trie](https://github.com/wolfgarbe/PruningRadixTrie) podem ser mais eficazes como filtros, combinados ao algoritmo de Aho-Corasick.  
+- Avaliar se combinações entre as estratégias de análise contextual e uso de blacklists podem trazer um resultado ainda melhor.
 
 ## Contribuintes
 
