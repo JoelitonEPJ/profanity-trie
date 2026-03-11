@@ -174,7 +174,7 @@ public class FileUtils {
      */
     public static Map<WordCategory, List<String>> readWords() {
 
-        String[] linhas = readFile(SENTENCES_DIR.resolve("words.csv"));
+        String[] linhas = readFile(SENTENCES_DIR.resolve("sample_words.csv"));
         Map<WordCategory, List<String>> words = new HashMap<>();
 
         for (int i = 1; i < linhas.length; i++) {

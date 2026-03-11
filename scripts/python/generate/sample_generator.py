@@ -65,7 +65,7 @@ def gera_palavras():
     with open(DATA_DIR/"sentences"/"sample_words.csv", "w", newline="", encoding="utf-8") as arq_csv:
         writer = csv.writer(arq_csv, delimiter=",")
         writer.writerow(["palavra", "modificador"])
-        for _ in range(QUANT_LINHAS_DEFAULT):
+        for _ in range(QUANT_LINHAS_DEFAULT*10):
             mod = select_modifier(hidden=True)
 
             word = random.choice(bad_words).strip()
