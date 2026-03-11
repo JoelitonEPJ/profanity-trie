@@ -11,8 +11,7 @@ public class RegexBenchmark extends BenchmarkConfig {
     private Map<Character, String[]> leetMap;
 
     @Override
-    public void setUp() {
-        super.setUp();
+    public void additionalSetUp() {
         leetMap = FileUtils.readCsvCharToLeetMap();
     }
 

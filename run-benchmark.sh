@@ -81,9 +81,9 @@ fi
 # velocidade de busca em frases e detecção
 if [[ $run_comp == phrases ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/search_phrases_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correctly Identified\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
+        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Param: phraseSize\",\"Category\"" > $results_dir/search_phrases_efficiency.csv
     fi
-    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000,5000,10000
+    java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000
 fi
 
 # velocidade de busca em palavras e detecção

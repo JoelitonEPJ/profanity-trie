@@ -7,6 +7,9 @@ public class BaselineBenchmark extends BenchmarkConfig {
     private Baseline benchmarkBaseline;
 
     @Override
+    public void additionalSetUp() {}
+    
+    @Override
     public void addWords(String[] words) {
         benchmarkBaseline = new Baseline(words);
     }

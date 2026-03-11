@@ -4,6 +4,9 @@ import util.BenchmarkConfig;
 
 public class TrieBenchmark extends BenchmarkConfig {
     @Override
+    public void additionalSetUp() {}
+    
+    @Override
     public void addWords(String[] words) {
     }
 
