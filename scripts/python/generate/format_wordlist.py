@@ -6,7 +6,7 @@ from csv import writer
 from sys import argv
 from re import sub
 
-ROOT_DIR = Path(__file__).parent.parent.parent
+ROOT_DIR = Path(__file__).parents[3]
 
 GOOD_WORDS_DIR = ROOT_DIR/"data"/"good_words"
 BAD_WORDS_DIR  = ROOT_DIR/"data"/"bad_words"

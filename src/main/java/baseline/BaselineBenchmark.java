@@ -5,7 +5,7 @@ import util.BenchmarkConfig;
 public class BaselineBenchmark extends BenchmarkConfig {
 
     private Baseline benchmarkBaseline;
-
+    
     @Override
     public void addWords(String[] words) {
         benchmarkBaseline = new Baseline(words);
