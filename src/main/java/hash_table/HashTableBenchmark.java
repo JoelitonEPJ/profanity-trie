@@ -7,9 +7,6 @@ public class HashTableBenchmark extends BenchmarkConfig {
     private HashTable benchmarkHashTable;
 
     @Override
-    public void additionalSetUp() {}
-
-    @Override
     public void addWords(String[] words) {
         benchmarkHashTable = new HashTable(words);
     }

@@ -206,7 +206,7 @@ public class FileUtils {
 
         for (int i = 1; i < linhas.size(); i++) {
             String linha = linhas.get(i);
-            if (linha.startsWith(className) && linha.contains("," + phraseSize) && linha.endsWith(category)) {
+            if (linha.startsWith(className) && linha.contains("," + phraseSize + ",") && linha.endsWith(category)) {
                 linhas.set(i, lineToSave);
 
                 saveFileContent(filePath, linhas);

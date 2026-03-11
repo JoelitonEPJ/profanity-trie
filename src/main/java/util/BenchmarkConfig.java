@@ -54,7 +54,7 @@ abstract public class BenchmarkConfig {
         addWords(words);
     }
 
-    public abstract void additionalSetUp();
+    public void additionalSetUp() {};
 
     @Setup(Level.Trial)
     public void setUp() {

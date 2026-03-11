@@ -3,10 +3,6 @@ package aho_corasick;
 import util.BenchmarkConfig;
 
 public class AhoCorasickBenchmark extends BenchmarkConfig {
-    
-    @Override
-    public void additionalSetUp() {}
-    
     @Override
     public void addWords(String[] words) {
     }

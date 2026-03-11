@@ -27,7 +27,6 @@ public class Regex {
 
         Matcher matcher = matcher(entrada);
         while (matcher.find()) {
-            // System.out.println(matcher.group());
             counter++;
         }
 
@@ -40,14 +39,15 @@ public class Regex {
         return matcher.matches();
     }
 
-    private void escapePipe(String[] toEscape) {
+    private void escapeReserved(String[] toEscape) {
         for (int i = 0; i < toEscape.length; i++) {
             if (toEscape[i].equals("|")) toEscape[i] = "\\\\|";
+            if (toEscape[i].equals("$")) toEscape[i] = "\\\\$";
         }
     }
 
-    public String buildPattern(String[] palavras) {
-        StringBuilder padrao = new StringBuilder("\\s*\\b(");
+    public final String buildPattern(String[] palavras) {
+        StringBuilder padrao = new StringBuilder("(?<![A-Za-z0-9])(?:");
 
         for (int i = 0; i < palavras.length; i++) {
             char ultimoChar = 0;
@@ -55,11 +55,13 @@ public class Regex {
 
             for (int j = 0; j < palavras[i].length(); j++) {
                 char charAtual = Character.toLowerCase(palavras[i].charAt(j));
+                if (ultimoChar == charAtual) continue;
 
                 leets = leetMap.getOrDefault(charAtual, new String[] { "" + charAtual });
-                escapePipe(leets);
+                escapeReserved(leets);
 
-                if (ultimoChar != charAtual) padrao.append("(?:").append(String.join("|", leets)).append(")+\\s*");
+                padrao.append("(?:").append(String.join("|", leets)).append(")+");
+                if (j != palavras.length - 1) padrao.append("\\s*");
 
                 ultimoChar = charAtual;
             }
@@ -67,6 +69,6 @@ public class Regex {
             if (i != palavras.length - 1) padrao.append("|");
         }
 
-        return padrao.append(")\\b\\s*").toString();
+        return padrao.append(")(?![A-Za-z0-9])").toString();
     }
 }

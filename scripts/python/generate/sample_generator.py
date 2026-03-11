@@ -51,9 +51,10 @@ def gera_frases():
                         frase_atual += random.choice(good_words).strip() + " "
                     else:
                         if mod == "none":
-                            frase_atual += random.choice(bad_words).strip()
+                            frase_atual += random.choice(bad_words).strip() + " "
                         else:
                             frase_atual += modifier(random.choice(bad_words).strip(), leet_dict, mod).strip() + " "
+
                         conta_bad_words += 1
 
                 writer.writerow([frase_atual.strip(), conta_bad_words, mod])
