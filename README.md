@@ -223,7 +223,9 @@ Por fim, foi criado também um conjunto de good words, retirado do dicionário b
 
 ### 3. Implementação dos métodos
 
-
+- a aho foi pensada para contrapor a trie, explorando o algoritmo de bfs, ao contrário do utilizado pela trie normal (dfs), referencia: TheAlgorithms
+- a trie teve uma implementação customizada utilizando algoritmos de window sliding
+- regex, hash table e baseline?
 
 ### 4. Geração das cargas de teste
 
@@ -287,13 +289,24 @@ Os experimentos foram divididos em 4 categorias: **Velocidade de Inserção**, *
 
 ## Ameaças à validade
 
-1. O experimento foi conduzido com tamanho máximo de entrada de 10⁵ para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar aproximadamente 10³ elementos. Com uma lotação maior, paginação de memória e estratégias de Garbace Collector podem se tornar mais relevantes e alterar os resultados.
+1. O experimento foi conduzido com tamanho máximo de entrada de 10<sup>5</sup> para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar aproximadamente 10<sup>3</sup> elementos. Com uma lotação maior, paginação de memória e estratégias de Garbace Collector podem se tornar mais relevantes e alterar os resultados.
 2. Benchmarks dependem fortemente do Hardware, Sistema Operacional, e implementação da máquina virtual de Java (JVM). Mesmo utilizando JMH para tentar minimizar erros pontuais, resultados podem variar se replicados em arquiteturas diferentes.
 3. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho de memória do Regex e de busca da HashTable. Em aplicações reais, uma restrição desse tipo não existiria e ambas as estruturas provavelmente apresentariam um desempenho melhor.
+4. Com o intuito de analisar o desempenho em casos extremos, as entradas utilizadas para testar a capacidade de detecção em frases chegaram à casa de 10<sup>7</sup> (1000 frases de 10000 palavras cada), porém, nos contextos onde esses filtros se mostram necessários, como chats de jogos e comentários em plataformas digitais, é comum que sentenças não tenham mais do que 300 palavras cada.
+
+### Experimento de Validação (Ameaça 4)
+
+| Método       | None | Upper | Spaced | Encoded | Stretched |
+|--------------|------|-------|--------|---------|-----------|
+| Aho-Corasick |      |       |        |         |           |
+| Baseline     |      |       |        |         |           |
+| HashTable    |      |       |        |         |           |
+| Regex        |      |       |        |         |           |
+| Trie         |      |       |        |         |           |
 
 ## Trabalhos Futuros
 
-- Como distinguido na seção de [Problemática](#problemática), esse projeto se resumiu à comparação entre métodos que utilizam blacklists para detecção e filtragem de palavras ofensivas, deixando de lado a estratégia de análise contextual, que pode trazer benefícios quando comparado ao simples uso de blacklists para categorizar palavras, ignorando o contexto envolvido na conversa. Por isso, seria interessante expandir o experimento para algoritmos que conseguem realizar análises contextuais.
+- Como distinguido na seção de [Problemática](#problemática), esse projeto se resumiu à comparação entre métodos que utilizam blacklists para detecção e filtragem de palavras ofensivas, deixando de lado a estratégia de análise contextual, que pode trazer benefícios quando comparado ao simples uso de blacklists para categorizar palavras. Por isso, seria interessante expandir o experimento para algoritmos que conseguem realizar análises contextuais.
 - Estudar se implementações reduzidas espacialmente da Trie como a [Patricia Trie](https://en.wikipedia.org/wiki/Radix_tree) e a [Height Optimized Trie](https://15721.courses.cs.cmu.edu/spring2019/papers/08-oltpindexes2/p521-binna.pdf) podem ser mais eficazes como filtros, combinadas ao algoritmo de Aho-Corasick.
 - Avaliar se combinações entre as estratégias de análise contextual e uso de blacklists podem trazer um resultado ainda melhor.
 
