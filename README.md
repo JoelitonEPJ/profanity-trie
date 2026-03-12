@@ -110,6 +110,24 @@ O tema discutido vem se tornando cada vez mais relevante nos dias atuais, visto 
 
 ### Aho-Corasick
 
+Em tarefas de detecção de padrões em texto, o Aho–Corasick algorithm permite a busca simultânea de múltiplos padrões por meio da construção de um autômato baseado em uma trie com links de falha, tornando o processo eficiente mesmo para grandes conjuntos de palavras. Essa característica é especialmente útil no nosso contexto de detecção de bad words, pois foi possível adaptar o método para reconhecer variações de escrita, incluindo formas de L33T, sem a necessidade de guardar na memória todas as variações possíveis de palavras mascaradas, diferente da Baseline e HashTable. Isso foi possível pois utilizamos um mapa de interpretações. 
+
+#### Funcionamento do Algoritmo
+
+A implementação se estrutura em três fases principais:
+
+1. **Contrução da Trie**: Os padrões fornecidos são organizados em uma árvore de prefixos, onde cada nó representa um caractere e o caminho da raiz até uma folha formam uma palavra completa.
+
+2. **Construção de Links de sufixo e saída**: O coração do algoritmo. Através de uma busca em largura (BFS), cada nó recebe um link de sufixo (suffixLink) que aponta para o maior prefixo que também é sufixo do caminho atual, permitindo transições eficientes quando uma correspondência não é encontrada. Os links de saída (outputLink), por sua vez, criam uma estrutura em cascata que garante a detecção de todos os padrões que possam terminar em uma determinada posição do texto.
+
+3. **Busca com suporte a L33T**: Para cada caractere do texto de entrada, o sistema consulta um mapa de transformações que pode substituí-lo por suas variações (como '4' -> 'a', '3' -> 'e'). O algoritmo então tenta todas as interpretações possíveis, seguindo as transições da máquina de estados e verificando correspondências através dos links de saída. Caracteres especiais como espaços resetam o estado atual, tratando cada palavra independentemente.
+
+#### Análise e Contextualização
+
+O aho-Corasick representa uma evolução significativa em relação às abordagens ingênuas de filtragem. Enquanto a Baseline percorre o texto uma vez para cada padrão, resultando em complexidade O(n · m), este algoritmo constrói uma máquina de estados que processa o texto em uma única passada, alcançando O(n + m), onde n é o tamanho do texto e m é o tamanho dos padrões. Esta diferença torna-se crucial em aplicações de tempo real com milhares de termos proibidos.
+
+Além disso, diferentemente da Baseline e HashTable, a Aho-Corasick detecta facilmente padrões mascarados, isto é, permite identificar "cachorro" mesmo quando escrito como "c@ch0rr0", sem a necessidade de guardar todas as variações. Outra característica importante é a capacidade de detectar padrões sobrepostos; por exemplo, se “cacho” for considerada uma palavra proibida, o algoritmo também a identificará dentro de “cachorro”. No entanto, essa mesma propriedade pode levar à ocorrência de falsos positivos, já que qualquer substring correspondente ao padrão armazenado será sinalizada, independentemente do contexto.
+
 ---
 
 ### Baseline
