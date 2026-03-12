@@ -12,8 +12,7 @@ public class AhoCorasickBenchmark extends BenchmarkConfig {
     private Map<Character, ArrayList<Character>> leetMap;
     
     @Override
-    public void setUp() {
-        super.setUp();
+    public void additionalSetUp() {
         leetMap = FileUtils.readCsvLeetToCharMap();
     }
 
