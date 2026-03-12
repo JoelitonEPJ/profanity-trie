@@ -48,7 +48,7 @@ if [ ! -f data/bad_words/formatted.csv ] || [ ! -f data/good_words/formatted.txt
 fi
 
 if [ ! -d data/sentences ]; then
-    python3 $scripts_dir/generate/sentences_generator.py
+    python3 $scripts_dir/generate/sample_generator.py
 fi
 
 if [[ -v classes[${1}] ]]; then

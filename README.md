@@ -80,11 +80,11 @@ O arquivo `run-benchmark.sh` foi utilizado para rodar o projeto de maneira simpl
 
 A existência de um filtro de palavras ofensivas é muito importante para plataformas digitais que almejam ser seguras. Filtros desse tipo são utilizados nos mais diversos ambientes digitais como redes sociais, fóruns, jogos online e plataformas de comunicação. É o uso dessa ferramenta que torna possível a prevenção de discursos de ódio, moderação e cumprimento de políticas, e proteção de usuários vulneráveis como crianças e adolescentes, por exemplo.
 
-Porém, mesmo com a grande relevância dessa ferramenta, ainda não existe um meio definitivo para fazer essa filtragem, já que existem múltiplas estratégias e múltiplas maneiras de aplicar cada uma dessas estratégias. Podemos separar as estratégias em dois tipos diferentes, os quais são:
+Porém, mesmo com a grande relevância dessa ferramenta, ainda não existe um meio definitivo para fazer essa filtragem, já que existem múltiplas estratégias e múltiplas maneiras de aplicar cada uma delas. Essas estratégias podem ser divididas em dois tipos diferentes, citados abaixo:
 
 - **Uso de blacklists**: estratégias desse tipo envolvem a criação de listas de palavras banidas. Geralmente, são usadas em conjunto com algoritmos/estruturas especializados na busca e recuperação rápida de informação em strings, como **Regex**, **Aho-Corasick** e **Trie**, ou estruturas de busca rápida de propósito geral, como **HashTable**;
 
-- **Análise Contextual**: métodos relacionados a essa estratégia estão geralmente relacionados à algoritmos de PLN (Processamento de Linguagem Natural) ou de classificação, como o [classificador de Naive Bayes](https://en.wikipedia.org/wiki/Naive_Bayes_classifier), que conseguem detectar padrões nas frases e classificá-las de acordo.
+- **Análise Contextual**: métodos relacionados a essa estratégia estão geralmente relacionados à algoritmos de PLN (Processamento de Linguagem Natural) ou de classificação, como o [Classificador de Naive Bayes](https://en.wikipedia.org/wiki/Naive_Bayes_classifier), que conseguem detectar padrões nas frases e classificá-las de acordo.
 
 ---
 
@@ -156,7 +156,7 @@ Apesar da velocidade superior de busca, a estrutura traz trade-offs importantes 
 
 - **Consumo de Memória**: É esperado que a HashTable apresente um custo de memória notavelmente maior que o Baseline. Isso acontece porque a estrutura exige mais memória para organizar suas tabelas internas e para gerenciar as colisões de dados.
 
-- **Capacidade de Detecção Limitada**: Assim como o Baseline, a HashTable é severamente afetada pela restrição de que a String recebida deve ser idêntica a badword contida no HashMap.
+- **Capacidade de Detecção Limitada**: Assim como o Baseline, a HashTable é severamente afetada pela restrição de que a String recebida deve ser idêntica à badword contida no HashMap.
 
 ---
 
@@ -201,7 +201,7 @@ O próximo passo foi procurar listas de palavras banidas para formar um catálog
 
 Durante a análise, foi possível notar que muitas listas possuem variações [Leet](https://pt.wikipedia.org/wiki/Leet) da mesma palavra, o que consumiria mais memória para armazenar todas as palavras nas estruturas estudadas. Para evitar isso, foi criada uma tabela customizada que relaciona caracteres usuais com variações leet/acentuações comuns, permitindo uma maior customização na detecção de palavras.
 
-Por fim, foi criado também um conjunto de good words, retirado do dicionário brasileiro de Linux, disponível 
+Por fim, foi criado também um conjunto de good words, retirado do dicionário brasileiro disponibilizado por Linux, geralmente encontrado no diretório `/usr/share/dict`.
 
 ### 3. Implementação dos métodos
 
@@ -231,42 +231,52 @@ O estudo acerca do desempenho dos métodos de filtragem foi feito utilizando a f
 
 Além disso, há o uso de outras estratégias para evitar interferências externas, como a execução de séries de aquecimento, com o propósito de minimizar o impacto da lentidão das execuções iniciais, causados pelo lento "startup" da JVM, e o uso de forks, que isola a execução de cada Benchmark, evitando interferências de otimizações anteriores.
 
-Para realizar esse experimento, foram definidos 5 forks onde são realizadas 10 ciclos de medição e 5 ciclos de aquecimento por fork, totalizando 75 ciclos de execução de 5 segundos cada.
+Para realizar esse experimento, foram definidos 5 forks onde são realizadas 10 ciclos de medição e 5 ciclos de aquecimento por fork, totalizando 75 ciclos de execução no total para cada .
+
+Os experimentos foram divididos em 4 categorias: **Velocidade de Inserção**, **Consumo de Memória**, **Análise de Frases** e **Capacidade de Detecção**.
 
 ## Experimentos
 
-Os experimentos de comparação entre os métodos de filtragem foram divididos da seguinte maneira:
-
-**1. Velocidade de Inserção**
+### Velocidade de Inserção
 
 
 
-**2. Consumo de Memória**
+### Consumo de Memória
 
 
 
-**3. Velocidade para entradas grandes**
+### Análise de Frases
 
+| Método       | None | Upper | Spaced | Encoded | Stretched |
+|--------------|------|-------|--------|---------|-----------|
+| Aho-Corasick |      |       |        |         |           |
+| Baseline     |      |       |        |         |           |
+| HashTable    |      |       |        |         |           |
+| Regex        |      |       |        |         |           |
+| Trie         |      |       |        |         |           |
 
+### Capacidade de Detecção
 
-**4. Capacidade de detecção**
-
-
+| Método       | None | Upper | Hidden | Spaced | Encoded | Stretched |
+|--------------|------|-------|--------|--------|---------|-----------|
+| Aho-Corasick |      |       |        |        |         |           |
+| Baseline     |      |       |        |        |         |           |
+| HashTable    |      |       |        |        |         |           |
+| Regex        |      |       |        |        |         |           |
+| Trie         |      |       |        |        |         |           |
 
 ## Conclusão
 
 ## Ameaças à validade
 
-1. O experimento foi conduzido com tamanho máximo de entrada de 10⁵ para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar aproximadamente 10³ elementos, logo, com uma lotação maior, paginação de memória e estratégias de GC podem se tornar mais relevantes e alterar os resultados.
-2. Benchmarks dependem fortemente do Hardware, Sistema Operacional, implementação da JVM e configurações da máquina virtual. Mesmo utilizando JMH para tentar minimizar erros pontuais, resultados podem variar se replicados em arquiteturas diferentes.
-3. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho de memória do Regex e de busca da HashTable. Em aplicações reais, uma restrição desse tipo não existiria e ambas as estruturas teriam uma performance melhor
-
-> experimento extra de detecção de palavras para testar isso?
+1. O experimento foi conduzido com tamanho máximo de entrada de 10⁵ para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar aproximadamente 10³ elementos. Com uma lotação maior, paginação de memória e estratégias de Garbace Collector podem se tornar mais relevantes e alterar os resultados.
+2. Benchmarks dependem fortemente do Hardware, Sistema Operacional, e implementação da máquina virtual de Java (JVM). Mesmo utilizando JMH para tentar minimizar erros pontuais, resultados podem variar se replicados em arquiteturas diferentes.
+3. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho de memória do Regex e de busca da HashTable. Em aplicações reais, uma restrição desse tipo não existiria e ambas as estruturas provavelmente apresentariam um desempenho melhor.
 
 ## Trabalhos Futuros
 
 - Como distinguido na seção de [Problemática](#problemática), esse projeto se resumiu à comparação entre métodos que utilizam blacklists para detecção e filtragem de palavras ofensivas, deixando de lado a estratégia de análise contextual, que pode trazer benefícios quando comparado ao simples uso de blacklists para categorizar palavras, ignorando o contexto envolvido na conversa. Por isso, seria interessante expandir o experimento para algoritmos que conseguem realizar análises contextuais.
-- Estudar se implementações reduzidas espacialmente da Trie como a [Radix Trie](https://en.wikipedia.org/wiki/Radix_tree) e a [Pruning Radix Trie](https://github.com/wolfgarbe/PruningRadixTrie) podem ser mais eficazes como filtros, combinados ao algoritmo de Aho-Corasick.  
+- Estudar se implementações reduzidas espacialmente da Trie como a [Patricia Trie](https://en.wikipedia.org/wiki/Radix_tree) e a [Height Optimized Trie](https://15721.courses.cs.cmu.edu/spring2019/papers/08-oltpindexes2/p521-binna.pdf) podem ser mais eficazes como filtros, combinadas ao algoritmo de Aho-Corasick.
 - Avaliar se combinações entre as estratégias de análise contextual e uso de blacklists podem trazer um resultado ainda melhor.
 
 ## Contribuintes
@@ -281,4 +291,4 @@ Os experimentos de comparação entre os métodos de filtragem foram divididos d
 
 - [Joéliton Elias Pereira Junior](https://github.com/JoelitonEPJ)
 
-Projeto feito como trabalho final da disciplina de Estrutura de Dados e Algoritmos (EDA) e Laboratório de Estrutura de Dados e Algoritmos (LEDA) da graduação em Ciência da Computação na Universidade Federal de Campina Grande (UFCG) no período 2025.2.
+Projeto feito como trabalho final da disciplina de Estrutura de Dados e Algoritmos (EDA) e Laboratório de Estrutura de Dados e Algoritmos (LEDA) do curso de Ciência da Computação na Universidade Federal de Campina Grande (UFCG) durante o período 2025.2.
