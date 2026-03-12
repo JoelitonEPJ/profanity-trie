@@ -191,22 +191,23 @@ public class FileUtils {
     /**
      * Saves (overriding, if necessary) the results of the new searchPhrases run.
      * 
-     * @param className   name of the class to be recorded
-     * @param correct     how many bad word counts were correct for this category
-     * @param missed      how many bad word counts were incorrect for this category
-     * @param phraseSize  the phrase size used for this comparison
-     * @param category    the category to be saved
+     * @param className    name of the class to be recorded
+     * @param correct      how many bad word counts were correct for this category
+     * @param missed       how many bad word counts were incorrect for this category
+     * @param errorMargin  the biggest margin of error for this category
+     * @param phraseSize   the phrase size used for this comparison
+     * @param category     the category to be saved
      */
-    public static void savePhrasesResult(String className, int correct, int missed, int phraseSize, String category) {
+    public static void savePhrasesResult(String className, int correct, int missed, int errorMargin, String category, int phraseSize) {
         final Path filePath = RESULTS_DIR.resolve("search_phrases_efficiency.csv");
 
-        String lineToSave = className + "," + correct + "," + missed + "," + phraseSize + "," + category;
+        String lineToSave = className + "," + correct + "," + missed + "," + errorMargin + "," + category + "," + phraseSize;
         List<String> linhas = new ArrayList<>();
         if (Files.exists(filePath)) Collections.addAll(linhas, readFile(filePath));
 
         for (int i = 1; i < linhas.size(); i++) {
             String linha = linhas.get(i);
-            if (linha.startsWith(className) && linha.contains("," + phraseSize + ",") && linha.endsWith(category)) {
+            if (linha.startsWith(className) && linha.contains(category) && linha.endsWith("," + phraseSize)) {
                 linhas.set(i, lineToSave);
 
                 saveFileContent(filePath, linhas);
