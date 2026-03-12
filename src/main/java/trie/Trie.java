@@ -10,6 +10,7 @@ public class Trie {
     private final Node root;
     private final Map<Character, ArrayList<Character>> leetMap;
 
+
     public Trie(Map<Character, ArrayList<Character>> leetMap){
         this.root = new Node();
         this.leetMap = leetMap;
@@ -52,39 +53,58 @@ public class Trie {
 
         current.end = true;
     }
+
+    public int findLongestBadWordIndex(String phrase, int j, Node current){
+            if (current == null || j >= phrase.length()){
+                return -1;
+            }
+
+            int maxMatch = -1;
+            char originalChar = phrase.charAt(j);
+
+            if (originalChar == '-'){
+                return findLongestBadWordIndex(phrase, j + 1, current);
+            }
+
+            char caracter = Character.toLowerCase(originalChar);
+            ArrayList<Character> possibilities = leetMap.get(caracter);
+
+            if (possibilities == null){
+                if (current == this.root){
+                    return -1;
+                }
+                return findLongestBadWordIndex(phrase, j + 1, current);
+            }
+
+            for (char nextChar : possibilities){
+                Node next = current.childs.get(nextChar);
+
+                if (next != null){
+                    if (next.isBadNode || next.end){
+                        maxMatch = Math.max(maxMatch,j);
+                    }
+
+                    int currentMatch = findLongestBadWordIndex(phrase, j + 1, next);
+
+                    maxMatch = Math.max(maxMatch,currentMatch);
+                }
+            }
+            return maxMatch;
+    }
     
     public int countBadWords(String phrase){
         int count = 0;
         int size = phrase.length();
 
         for (int i = 0; i < size; i++) {
-            Node current = this.root;
-            int lastMatchIndex = -1;
+            int lastMatchIndex = findLongestBadWordIndex(phrase, i, this.root);
 
-            for (int j = i; j < size; j++) {
-                char caracter = phrase.charAt(j);
-                
-                if (caracter == '-') {
-                    continue;
-                }
-
-                current = current.childs.get(caracter);
-
-                if (current == null) {
-                    break;
-                }
-
-                if (current.isBadNode || current.end) {
-                    lastMatchIndex = j;
-                }
-            }
-
-            if (lastMatchIndex != -1) {
+            if (lastMatchIndex != -1){
                 count++;
                 i = lastMatchIndex;
             }
         }
-        
+
         return count;
     }
 
