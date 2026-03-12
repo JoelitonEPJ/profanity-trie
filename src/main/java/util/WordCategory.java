@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum WordCategory {
-    NORMAL, HIDDEN, SPACED, ENCODED, STRETCHED;
+    NONE, UPPER, HIDDEN, SPACED, ENCODED, STRETCHED;
 
     public static WordCategory getCategory(String category) {
         return Enum.valueOf(WordCategory.class, category.toUpperCase());

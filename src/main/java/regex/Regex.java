@@ -1,8 +1,8 @@
 package regex;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Regex {
     
@@ -26,8 +26,9 @@ public class Regex {
         int counter = 0;
 
         Matcher matcher = matcher(entrada);
-        while (matcher.find()) 
+        while (matcher.find()) {
             counter++;
+        }
 
         return counter;
     }
@@ -38,26 +39,36 @@ public class Regex {
         return matcher.matches();
     }
 
-    public String buildPattern(String[] palavras) {
-        StringBuilder pattern = new StringBuilder();
+    private void escapeReserved(String[] toEscape) {
+        for (int i = 0; i < toEscape.length; i++) {
+            if (toEscape[i].equals("|")) toEscape[i] = "\\\\|";
+            if (toEscape[i].equals("$")) toEscape[i] = "\\\\$";
+        }
+    }
 
-        String padrao = "";
+    public final String buildPattern(String[] palavras) {
+        StringBuilder padrao = new StringBuilder("(?<![A-Za-z0-9])(?:");
+
         for (int i = 0; i < palavras.length; i++) {
             char ultimoChar = 0;
-            String[] leets = {};
+            String[] leets;
+
             for (int j = 0; j < palavras[i].length(); j++) {
                 char charAtual = Character.toLowerCase(palavras[i].charAt(j));
-                leets = this.leetMap.get(charAtual);
+                if (ultimoChar == charAtual) continue;
 
-                if (ultimoChar != charAtual) padrao = "(?:" + String.join("|", leets) + ")+ ?";
+                leets = leetMap.getOrDefault(charAtual, new String[] { "" + charAtual });
+                escapeReserved(leets);
+
+                padrao.append("(?:").append(String.join("|", leets)).append(")+");
+                if (j != palavras.length - 1) padrao.append("\\s*");
 
                 ultimoChar = charAtual;
             }
 
-            if (!(pattern.length() == 0)) pattern.append("|");
-            pattern.append(padrao); 
+            if (i != palavras.length - 1) padrao.append("|");
         }
 
-        return pattern.toString();
+        return padrao.append(")(?![A-Za-z0-9])").toString();
     }
 }

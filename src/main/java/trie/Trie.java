@@ -19,31 +19,31 @@ public class Trie {
         
     private final Node root;
         
-    public Trie(){
-        this.root = new Node();
-    }
-
-    public void insert(String texto){
-        Node current = root;
-
-        for (char caracter : texto.toCharArray()){
-            current.childs.putIfAbsent(caracter, new Node());
-
-            current = current.childs.get(caracter);
-            current.counting++;
+        public Trie(){
+            this.root = new Node();
         }
-        current.end = true;
-    }
-
-    public int query(String alvo){
-        Node current = root;
-
-        for (char caracter : alvo.toCharArray()){
-            current = current.childs.get(caracter);
-
-            if (current == null) return 0;
+    
+        public void insert(String texto){
+            Node current = root;
+    
+            for (char caracter : texto.toCharArray()){
+                current.childs.putIfAbsent(caracter, new Node());
+    
+                current = current.childs.get(caracter);
+                current.counting++;
+            }
+            current.end = true;
         }
+    
+        public int query(String alvo){
+            Node current = root;
+    
+            for (char caracter : alvo.toCharArray()){
+                current = current.childs.get(caracter);
 
-        return current.counting;
+                if (current == null) return 0;
+            }
+    
+            return current.counting;
+        }
     }
-}

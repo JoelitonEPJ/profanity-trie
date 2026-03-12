@@ -37,7 +37,7 @@ abstract public class BenchmarkConfig {
 
     protected String[] wordsToAdd;
 
-    protected Pair<String, Integer>[] phrases;
+    protected Map<WordCategory, List<Pair<String, Integer>>> categorizedPhrases;
     protected int correctAmount;
 
     private Map<WordCategory, List<String>> categorizedWords;
@@ -54,17 +54,19 @@ abstract public class BenchmarkConfig {
         addWords(words);
     }
 
+    public void additionalSetUp() {};
+
     @Setup(Level.Trial)
     public void setUp() {
+        additionalSetUp();
         switch (currentTest) {
             case "phrases":
                 addWords(FileUtils.readBadWords());
-                phrases = FileUtils.readPhrases(phraseSize);
+                categorizedPhrases = FileUtils.readPhrases(phraseSize);
                 break;
             case "words":
                 addWords(FileUtils.readBadWords());
                 categorizedWords = FileUtils.readWords();
-                categoryCountMap = WordCategory.categoryCountMap();
                 break;
             default:
                 wordsToAdd = FileUtils.readGoodWords();
@@ -78,6 +80,7 @@ abstract public class BenchmarkConfig {
 
     @Benchmark
     public void queryWords(Blackhole blackhole) {
+        categoryCountMap = WordCategory.categoryCountMap();
         for (Map.Entry<WordCategory, List<String>> wordsOfCategory : categorizedWords.entrySet()) {
             WordCategory category = wordsOfCategory.getKey();
 
@@ -91,21 +94,33 @@ abstract public class BenchmarkConfig {
 
     @Benchmark
     public void searchPhrases(Blackhole blackhole) {
-        for (Pair<String, Integer> phrase : phrases) {
-            if (countBadWords(phrase.first()) == phrase.second()) {
-                correctAmount++;
+        categoryCountMap = WordCategory.categoryCountMap();
+        for (Map.Entry<WordCategory, List<Pair<String, Integer>>> phrasesOfCategory : categorizedPhrases.entrySet()) {
+            WordCategory category = phrasesOfCategory.getKey();
+
+            for (Pair<String, Integer> phrase : phrasesOfCategory.getValue()) {
+                if (countBadWords(phrase.first()) == phrase.second()) {
+                    categoryCountMap.put(category, categoryCountMap.get(category) + 1);
+                }
             }
         }
     }
 
     @TearDown(Level.Trial)
-    public void recordPhraseResults() {
+    public void recordResults() {
         if (currentTest.equals("phrases")) {
-            FileUtils.savePhrasesResult(getClass().getName(), correctAmount, phraseSize);
+            for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
+                if (!categorizedPhrases.containsKey(entry.getKey())) continue;
+
+                int total = categorizedPhrases.get(entry.getKey()).size();
+                int missed = total - entry.getValue();
+
+                FileUtils.savePhrasesResult(getClass().getName(), entry.getValue(), missed, phraseSize, entry.getKey().name());
+            }
         } else if (currentTest.equals("words")) {
             for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
                 int total = categorizedWords.get(entry.getKey()).size();
-                int missed = entry.getValue() - total;
+                int missed = total - entry.getValue();
 
                 FileUtils.saveWordsResult(getClass().getName(), entry.getValue(), missed, entry.getKey().name());
             }
