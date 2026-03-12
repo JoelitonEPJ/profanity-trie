@@ -250,7 +250,6 @@ Finalmente, iremos comparar a capacidade de detecção de profanidades de cada m
 
 - [Gabriel Victor de Sousa Lima](https://github.com/gvsl60)
 
-
 - [Joéliton Elias Pereira Junior](https://github.com/JoelitonEPJ)
 
 Projeto feito como trabalho final da disciplina de Estrutura de Dados e Algoritmos (EDA) e Laboratório de Estrutura de Dados e Algoritmos (LEDA) da graduação em Ciência da Computação na Universidade Federal de Campina Grande (UFCG) no período 2025.2.
