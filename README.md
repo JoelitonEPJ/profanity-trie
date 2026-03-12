@@ -18,7 +18,7 @@ Implementação, documentação e comparação da Trie e outros métodos para a 
 
 - [Experimentos](#experimentos)
 
-- [Conclusão](#conclusão)
+- [Considerações Finais](#considerações-finais)
 
 - [Ameaças à validade](#ameaças-à-validade)
 
@@ -192,6 +192,13 @@ Apesar da velocidade superior de busca, a estrutura traz trade-offs importantes 
 $ ./run-benchmark.sh
 ```
 
+### Requisitos
+
+- Java *8.0+*
+- Maven *3.6.3+*
+- Python *3.10.12+*
+- Bash *4.3+*
+
 Para mais informações, rode `./run-benchmark.sh --help`. 
 
 ## Metodologia
@@ -223,9 +230,17 @@ Por fim, foi criado também um conjunto de good words, retirado do dicionário b
 
 ### 3. Implementação dos métodos
 
-- a aho foi pensada para contrapor a trie, explorando o algoritmo de bfs, ao contrário do utilizado pela trie normal (dfs), referencia: TheAlgorithms
-- a trie teve uma implementação customizada utilizando algoritmos de window sliding
-- regex, hash table e baseline?
+Para garantir uma comparação justa e abrangente, cada método foi implementado respeitando rigorosamente as restrições do projeto, focando em diferentes métodos de busca em strings:
+
+- **Baseline**: Foi implementado utilizando apenas um array de strings `String[]` como blacklist. O algoritmo quebra a frase recebida em tokens e realiza uma busca linear iterativa, comparando cada palavra do texto com um elemento da blacklist.
+
+- **HashTable**: Construída utilizando a coleção HashSet nativa da linguagem Java. Todas as palavras da blacklist são inseridas na tabela quando inicializada. Para a análise, a frase de entrada é tokenizada e cada palavra é consultada na tabela.
+
+- **Aho-Corasick**: Para garantir a coretude, foi utilizado o código disponibilizado pelo repositório TheAlgorithms. Essa estrutura foi escolhida para atuar como um contraponto à Trie tradicional, uma vez que sua construção explora o algoritmo de Busca em Largura (BFS) para a criação das transições, ao invés da Busca em Profundidade (DFS). A partir dessa base, nós adaptamos e expandimos a implementação para suportar as necessidades específicas de filtragem do projeto.
+
+- **Trie**: A estrutura de árvore de prefixos (Trie) teve uma implementação customizada. O algoritmo faz o uso da técnica de window sliding (janela deslizante). Isso permite avaliar dinamicamente substrings contínuas, iterando pelos nós da árvore para identificar se o conjunto atual de caracteres forma uma palavra ofensiva catalogada.
+
+- **Regex**: A detecção utilizando Expressões Regulares faz uso da implementação nativa de Java. A lista de palavras ofensivas é compilada em um autômato finito através de uma string única de padrão, utilizada para processar o texto recebido e identificar os termos filtrados.
 
 ### 4. Geração das cargas de teste
 
@@ -285,7 +300,7 @@ Os experimentos foram divididos em 4 categorias: **Velocidade de Inserção**, *
 | Regex        |      |       |        |        |         |           |
 | Trie         |      |       |        |        |         |           |
 
-## Conclusão
+## Considerações finais
 
 ## Ameaças à validade
 
@@ -309,6 +324,10 @@ Os experimentos foram divididos em 4 categorias: **Velocidade de Inserção**, *
 - Como distinguido na seção de [Problemática](#problemática), esse projeto se resumiu à comparação entre métodos que utilizam blacklists para detecção e filtragem de palavras ofensivas, deixando de lado a estratégia de análise contextual, que pode trazer benefícios quando comparado ao simples uso de blacklists para categorizar palavras. Por isso, seria interessante expandir o experimento para algoritmos que conseguem realizar análises contextuais.
 - Estudar se implementações reduzidas espacialmente da Trie como a [Patricia Trie](https://en.wikipedia.org/wiki/Radix_tree) e a [Height Optimized Trie](https://15721.courses.cs.cmu.edu/spring2019/papers/08-oltpindexes2/p521-binna.pdf) podem ser mais eficazes como filtros, combinadas ao algoritmo de Aho-Corasick.
 - Avaliar se combinações entre as estratégias de análise contextual e uso de blacklists podem trazer um resultado ainda melhor.
+
+## Referências
+
+Foi utilizado o repositório [TheAlgorithms](https://github.com/TheAlgorithms/Java/blob/4b04ad4a836ad87d6d4adf3bf395c0aade96bb07/src/main/java/com/thealgorithms/strings/AhoCorasick.java#L21) para a implementação do Aho Corasick como base para nossa própria implementação.
 
 ## Contribuintes
 
