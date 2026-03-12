@@ -44,11 +44,11 @@ public class Trie {
             current.childs.putIfAbsent(caracter, new Node());
             current = current.childs.get(caracter);
 
-            nodeCounting++;
-
             if (nodeCounting == index) {
                 current.isBadNode = true;
             }
+
+            nodeCounting++;
         }
 
         current.end = true;
