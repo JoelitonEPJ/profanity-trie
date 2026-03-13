@@ -234,7 +234,7 @@ A implementação se estrutura em três fases principais:
 
 1. **Construção da Trie**: Os padrões fornecidos são organizados em uma árvore de prefixos, onde cada nó representa um caractere e o caminho da raiz até uma folha forma uma palavra completa.
 
-2. **Construção dos Links de falha (Suffix e Output)**: O coração do algoritmo. Através de uma busca em largura (BFS), cada nó recebe um link de sufixo (suffixLink) que aponta para o maior prefixo que também é sufixo do caminho atual, permitindo que o autômato continue o processamento de forma eficiente sem retroceder no texto quando uma correspondência não é encontrada. Os links de saída (outputLink), por sua vez, criam uma estrutura em cascata que garante a detecção de todos os padrões que possam terminar em uma determinada posição do texto.
+2. **Construção dos Links de falha (Suffix e Output)**: Através de uma busca em largura, cada nó recebe um link de sufixo que aponta para o maior prefixo que também é sufixo do caminho atual, permitindo que o autômato continue o processamento de forma eficiente sem retroceder no texto quando uma correspondência não é encontrada. Os links de saída, por outro lado, criam uma estrutura que garante a detecção de todos os padrões que possam terminar em uma determinada posição do texto.
 
 3. **Busca com suporte a L33T**: Para cada caractere do texto de entrada, o sistema consulta um mapa de transformações que pode interpretá-lo como uma ou mais variações (como '4' -> 'a', '3' -> 'e'). O algoritmo então tenta todas as interpretações possíveis, seguindo as transições da máquina de estados e verificando correspondências através dos links de saída. Caracteres especiais como espaços resetam o estado atual, tratando cada palavra independentemente.
 
@@ -243,6 +243,16 @@ A implementação se estrutura em três fases principais:
 A Aho-Corasick representa uma evolução significativa em relação às abordagens ingênuas de filtragem. Enquanto a Baseline percorre o texto uma vez para cada padrão, resultando em complexidade O(n · m), este algoritmo constrói uma máquina de estados que processa o texto em uma única passada, alcançando O(n + m), onde n é o tamanho do texto e m é o tamanho dos padrões. Esta diferença torna-se crucial em aplicações de tempo real com milhares de termos proibidos.
 
 Além disso, diferentemente da Baseline e HashTable, a Aho-Corasick detecta facilmente padrões mascarados, isto é, permite identificar "cachorro" mesmo quando escrito como "c@ch0rr0", sem a necessidade de guardar todas as variações. Outra característica importante é a capacidade de detectar padrões sobrepostos; por exemplo, se “cacho” for considerada uma palavra proibida, o algoritmo também a identificará dentro de “cachorro”. No entanto, essa mesma propriedade pode levar à ocorrência de falsos positivos, já que qualquer substring correspondente ao padrão armazenado será sinalizada, independentemente do contexto.
+
+---
+
+### DSF x BFS
+
+A Busca em Largura (BFS) e a Busca em Profundidade (DFS) são estratégias fundamentais e opostas para percorrer a Trie. A BFS explora as informações por camadas, utilizando uma Fila (FIFO) para garantir que os nós mais próximos sejam processados primeiro, o que a torna ideal para encontrar caminhos mais curtos. Por outro lado, a DFS mergulha o mais fundo possível em um único caminho antes de retroceder (backtracking), utilizando uma Pilha (LIFO) ou recursão, o que é excelente para explorar todas as possibilidades de ramificações até o fim.
+
+O algoritmo de Aho-Corasick utiliza a BFS para construir seus "links de falha" e "links de saída" nível por nível. Essa abordagem em camadas é necessária porque, para calcular as rotas de recuo de um nó mais profundo, o autômato precisa que todas as conexões de falha dos níveis superiores já estejam previamente mapeadas e consolidadas para serem herdadas.
+
+Por outro lado, a Trie aplica a DFS de maneira recursiva para lidar com as variações do mapeamento de leet. Quando o código encontra um caractere com múltiplas interpretações, a DFS permite testar rapidamente uma combinação de caracteres até atingir o fim da palavra ou um nó de bloqueio. Caso o caminho não forme uma bad word, o algoritmo retrocede imediatamente e testa a próxima variação daquela letra, otimizando a busca sem a necessidade de armazenar todas as combinações textuais possíveis na memória.
 
 ---
 
