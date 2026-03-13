@@ -56,7 +56,7 @@ def insertion_memory_usage_benchmark_plot():
 
     ax.grid(color="gray", axis="y", linestyle="dotted", alpha=0.3, zorder=1)
 
-    plt.savefig(GRAPHS_DIR/"insert_all_memory_usage.png", dpi=600, bbox_inches="tight")
+    plt.savefig(GRAPHS_DIR/"insert_all_memory_usage.png", dpi=80, bbox_inches="tight")
 
 
 def insertion_speed_benchmark_plot():
@@ -89,7 +89,7 @@ def insertion_speed_benchmark_plot():
 
     ax.grid(color="gray", axis="y", linestyle="dotted", alpha=0.3, zorder=1)
 
-    plt.savefig(GRAPHS_DIR/"insert_all_speed_benchmark.png", dpi=600, bbox_inches="tight")
+    plt.savefig(GRAPHS_DIR/"insert_all_speed_benchmark.png", dpi=80, bbox_inches="tight")
 
 
 def search_phrases_speed_plot():
@@ -144,7 +144,7 @@ def search_phrases_speed_plot():
 
     ax.grid(color="gray", axis="y", linestyle="dotted", alpha=0.3, zorder=1)
 
-    plt.savefig(GRAPHS_DIR/"search_phrases_speed_benchmark.png", dpi=600, bbox_inches="tight")
+    plt.savefig(GRAPHS_DIR/"search_phrases_speed_benchmark.png", dpi=80, bbox_inches="tight")
 
     # incluindo regex
 
@@ -158,7 +158,7 @@ def search_phrases_speed_plot():
 
     ax.legend(handles=grupos.values(), labels=grupos.keys(), ncols=5, fontsize="small", frameon=False, loc="upper center", bbox_to_anchor=(0.45, 1.10))
     
-    plt.savefig(GRAPHS_DIR/"search_phrases_speed_benchmark_with_regex.png", dpi=600, bbox_inches="tight")
+    plt.savefig(GRAPHS_DIR/"search_phrases_speed_benchmark_with_regex.png", dpi=80, bbox_inches="tight")
 
 
 def formata_mb(num, pos):
