@@ -208,6 +208,32 @@ Apesar da capacidade de detecção vastamente superior, a estrutura traz trade-o
 
 ### Regex
 
+Regex é um autômato finito determinístico utilizado comumente na busca de palavras em arquivos que, no contexto do projeto, representa mais uma alternativa para comparação na filtragem das palavras. O algoritmo se destaca ao utilizar um padrão construído numa string seguindo suas próprias regras de codificação e formatação para identificar as palavras-alvo.
+
+#### Funcionamento do Algoritmo
+
+A montagem do padrão Regex implementada no projeto visa identificar tanto palavras normais quanto modificadas, sejam elas codificadas com leetcodes, espaçadas, esticadas, etc.
+
+1. **Inicialização e Armazenamento**: Na inicialização do Regex, o construtor recebe um array de palavras e uma tabela de leets. Então, o algoritmo monta o padrão Regex a partir da concatenação de grupos de captura contendo todas as variacoes leet para cada letra de cada palavra. Após isso, o algoritmo compila esse padrão e armazena na classe.
+
+2. **Separação da frase (Tokenização)**: O método recebe uma frase inteira e repassa para o método matcher() da classe Pattern, que cria um objeto Matcher que pode realizar operações de match na frase passada.
+
+3: **Busca e contagem de ocorrências**: Utiliza-se o metodo .find() da classe Matcher para iterar sobre cada ocorrência de badword identificado pelo Matcher a partir do padrão passado no construtor do algoritmo. Então, para cada grupo encontrado, incrementa uma variavel de contagem que é retornada ao fim do método.
+
+#### Análise e Contextualização
+
+Ao analisar os resultados dos testes de desempenho efetuados, nota-se alguns pontos positivos com relaçao ao Regex:
+
+- **Flexibilidade**: Nos testes de frases extensas, o regex apresentou desempenho razoável para todos os tipos de modificadores, sendo um algoritmo relativamente versátil na identificação de palavras num contexto que simula o real.
+
+- **Ótimo Desempenho em Casos Menores**: Nos testes de identificação de palavras individuais, o algoritmo desempenhou com excelência, apresentando precisão de mais de 90% para todos os testes de todos os modificadores, sendo um algoritmo confiável para entradas menores.
+
+Dessa forma, é notório que o diferencial do Regex está na sua flexibilidade em identificar tanto palavras normais quanto palavras completamente modificadas, seja em entradas grandes ou pequenas. Entretanto, essa flexibilidade só é possível com a introdução de alguns pontos negativos:
+
+- **Consumo de Memória**: Como, para cada letra de cada palavra, o algoritmo concatena todas as variações leet de cada uma das letras, para uma entrada de quase 1000 palavras, o algoritmo ocupa uma memória surpreendente acima de todas as outras estruturas, sendo o algoritmo com o pior desempenho de memória dos testes.
+
+- **Tempo de Execução**: De forma análoga, como o algoritmo itera sobre cada letra individualmente, identificando modificações leet de cada letra, repetições de cada letra, espaçamento, etc, o algoritmo possui um tempo de execução múltiplas vezes pior que as outras estruturas analisadas, ficando, novamente, atrás em desempenho nos testes.
+
 ---
 
 ## Como rodar o experimento?
