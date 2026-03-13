@@ -3,13 +3,13 @@
 set -e
 
 help() {
-    echo "usage: run-benchmark.sh [class] [benchmark]"
-    echo "                        [benchmark]"
-    echo "                        [-h --help]"
+    echo "usage: run-benchmark.sh [class] [benchmark]        "
+    echo "                        [benchmark]                "
+    echo "                        [-h --help]                "
     echo
-    echo "       class       one of  ${!classes[@]}"
-    echo "       benchmark   one of  ${benchmarks[*]}"
-    echo "       -h --help   show this help message and exit"
+    echo "       class       one of  ${!classes[@]}          "
+    echo "       benchmark   one of  ${benchmarks[*]}        "
+    echo "       -h --help   show this help message and exit "
 }
 
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
@@ -44,6 +44,8 @@ if [ ! -d $results_dir ] || [ ! -d out/graphs ]; then
 fi
 
 if [ ! -f data/bad_words/formatted.csv ] || [ ! -f data/good_words/formatted.txt ]; then
+    [[ ! -f data/bad_words/formatted.csv ]] && echo "info: file  \`data/bad_words/formatted.csv\` does not exist." 
+    [[ ! -f data/good_words/formatted.txt ]] && echo "info: file \`data/good_words/formatted.txt\` does not exist." 
     python3 $scripts_dir/generate/format_wordlist.py
 fi
 
@@ -81,7 +83,7 @@ fi
 # velocidade de busca em frases e detecção
 if [[ $run_comp == phrases ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/search_phrases_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Param: phraseSize\",\"Category\"" > $results_dir/search_phrases_efficiency.csv
+        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Margin of Error\"\"Category\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
     fi
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000,5000,10000
 fi
@@ -89,7 +91,7 @@ fi
 # velocidade de busca em palavras e detecção
 if [[ $run_comp == words ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/query_words_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Category\"" > $results_dir/query_words_efficiency.csv
+        echo "\"Benchmark\",\"Correct\",\"Wrong\",\"Category\"" > $results_dir/query_words_efficiency.csv
     fi
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.queryWords" -rf csv -rff $results_dir/query_words_perf.csv -p currentTest=words
 fi

@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -30,15 +31,16 @@ import org.openjdk.jmh.infra.Blackhole;
 abstract public class BenchmarkConfig {
 
     @Param({})
-    protected String currentTest;
+    private String currentTest;
 
     @Param({"-1"})
-    protected int phraseSize;
+    private int phraseSize;
 
-    protected String[] wordsToAdd;
+    private String[] wordsToAdd;
 
-    protected Map<WordCategory, List<Pair<String, Integer>>> categorizedPhrases;
-    protected int correctAmount;
+    private Map<WordCategory, List<Pair<String, Integer>>> categorizedPhrases;
+    private Map<WordCategory, Pair<Integer, Integer>> categoryCountErrorMap;
+
 
     private Map<WordCategory, List<String>> categorizedWords;
     private Map<WordCategory, Integer> categoryCountMap;
@@ -80,13 +82,17 @@ abstract public class BenchmarkConfig {
 
     @Benchmark
     public void queryWords(Blackhole blackhole) {
-        categoryCountMap = WordCategory.categoryCountMap();
+        categoryCountMap = new HashMap<>();
+
         for (Map.Entry<WordCategory, List<String>> wordsOfCategory : categorizedWords.entrySet()) {
             WordCategory category = wordsOfCategory.getKey();
+            boolean isGoodWordCategory = category.equals(WordCategory.GOOD_WORD);
 
+            categoryCountMap.put(category, 0);
             for (String word : wordsOfCategory.getValue()) {
-                if (checkIsBadWord(word)) {
-                    categoryCountMap.put(category, categoryCountMap.get(category) + 1);
+                boolean isBadWord = checkIsBadWord(word);
+                if (isBadWord && !isGoodWordCategory || !isBadWord && isGoodWordCategory) {
+                    categoryCountMap.compute(category, (k, v) -> v + 1);
                 }
             }
         }
@@ -94,13 +100,20 @@ abstract public class BenchmarkConfig {
 
     @Benchmark
     public void searchPhrases(Blackhole blackhole) {
-        categoryCountMap = WordCategory.categoryCountMap();
+        categoryCountErrorMap = new HashMap<>();
+
         for (Map.Entry<WordCategory, List<Pair<String, Integer>>> phrasesOfCategory : categorizedPhrases.entrySet()) {
             WordCategory category = phrasesOfCategory.getKey();
+            Pair<Integer, Integer> countError = new Pair<>(0, 0);
+            categoryCountErrorMap.putIfAbsent(category, countError);
 
             for (Pair<String, Integer> phrase : phrasesOfCategory.getValue()) {
-                if (countBadWords(phrase.first()) == phrase.second()) {
-                    categoryCountMap.put(category, categoryCountMap.get(category) + 1);
+                int badWordsCount = countBadWords(phrase.first());
+
+                if (badWordsCount == phrase.second()) {
+                    countError.setFirst(countError.first() + 1);
+                } else if (Math.abs(phrase.second() - badWordsCount) > Math.abs(countError.second())) {
+                    countError.setSecond(phrase.second() - badWordsCount);
                 }
             }
         }
@@ -109,21 +122,25 @@ abstract public class BenchmarkConfig {
     @TearDown(Level.Trial)
     public void recordResults() {
         if (currentTest.equals("phrases")) {
-            for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
-                if (!categorizedPhrases.containsKey(entry.getKey())) continue;
-
+            for (Map.Entry<WordCategory, Pair<Integer, Integer>> entry : categoryCountErrorMap.entrySet()) {
                 int total = categorizedPhrases.get(entry.getKey()).size();
-                int missed = total - entry.getValue();
+                int errorMargin = entry.getValue().second();
+                int correct = entry.getValue().first();
+                int missed = total - correct;
 
-                FileUtils.savePhrasesResult(getClass().getName(), entry.getValue(), missed, phraseSize, entry.getKey().name());
+                FileUtils.savePhrasesResult(className(), correct, missed, errorMargin, entry.getKey().name(), phraseSize);
             }
         } else if (currentTest.equals("words")) {
             for (Map.Entry<WordCategory, Integer> entry : categoryCountMap.entrySet()) {
                 int total = categorizedWords.get(entry.getKey()).size();
                 int missed = total - entry.getValue();
 
-                FileUtils.saveWordsResult(getClass().getName(), entry.getValue(), missed, entry.getKey().name());
+                FileUtils.saveWordsResult(className(), entry.getValue(), missed, entry.getKey().name());
             }
         }
+    }
+
+    private String className() {
+        return getClass().getName().replaceAll("_?jmh_?\\w+(\\.|)", "");
     }
 }

@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,10 +47,13 @@ public class FileUtils {
                 if (linha == null) {
                     break;
                 }
+                if (linha.isEmpty()) {
+                    continue;
+                }
                 lista.add(linha);
             }
         } catch (IOException e) {
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            System.err.println("error: unable to read file `" + caminho + "`, details: " + e.getMessage());
             return null;
         }
 
@@ -134,7 +138,7 @@ public class FileUtils {
                 Character leet = chave.charAt(0);
                 dicionario.putIfAbsent(leet, new ArrayList<>());
 
-                ArrayList<Character> value = dicionario.get(leet);
+                List<Character> value = dicionario.get(leet);
                 if (!value.contains(colunas[0].charAt(0))) {
                     value.add(colunas[0].charAt(0));
                 }
@@ -191,22 +195,23 @@ public class FileUtils {
     /**
      * Saves (overriding, if necessary) the results of the new searchPhrases run.
      * 
-     * @param className   name of the class to be recorded
-     * @param correct     how many bad word counts were correct for this category
-     * @param missed      how many bad word counts were incorrect for this category
-     * @param phraseSize  the phrase size used for this comparison
-     * @param category    the category to be saved
+     * @param className    name of the class to be recorded
+     * @param correct      how many bad word counts were correct for this category
+     * @param missed       how many bad word counts were incorrect for this category
+     * @param errorMargin  the biggest margin of error for this category
+     * @param phraseSize   the phrase size used for this comparison
+     * @param category     the category to be saved
      */
-    public static void savePhrasesResult(String className, int correct, int missed, int phraseSize, String category) {
+    public static void savePhrasesResult(String className, int correct, int missed, int errorMargin, String category, int phraseSize) {
         final Path filePath = RESULTS_DIR.resolve("search_phrases_efficiency.csv");
 
-        String lineToSave = className + "," + correct + "," + missed + "," + phraseSize + "," + category;
+        String lineToSave = className + "," + correct + "," + missed + "," + errorMargin + "," + category + "," + phraseSize;
         List<String> linhas = new ArrayList<>();
         if (Files.exists(filePath)) Collections.addAll(linhas, readFile(filePath));
 
         for (int i = 1; i < linhas.size(); i++) {
             String linha = linhas.get(i);
-            if (linha.startsWith(className) && linha.contains("," + phraseSize + ",") && linha.endsWith(category)) {
+            if (linha.startsWith(className) && linha.contains(category) && linha.endsWith("," + phraseSize)) {
                 linhas.set(i, lineToSave);
 
                 saveFileContent(filePath, linhas);
@@ -254,9 +259,10 @@ public class FileUtils {
      */
     public static void saveFileContent(Path caminho, List<String> linhas) {
         try {
+            System.out.println("info: writing to file `" + caminho + "`");
             Files.write(caminho, linhas, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("Erro ao salvar o arquivo: " + caminho);
+            System.err.println("error: unable to save file `" + caminho + "`, details: " + e.getMessage());
             System.exit(1);
         }
     }
