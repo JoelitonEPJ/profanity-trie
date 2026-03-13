@@ -195,7 +195,7 @@ A Trie (também conhecida como Árvore de Prefixos) introduz uma abordagem funda
   <figcaption>Figura 1: <i>Visualização de uma Trie</i></figcaption>
 </figure>
 
-Conforme pode ser observado pela figura, a conexão de um nó para seus filhos é feita por meio de caracteres. Os nós "terminais" estão representados em vermelho e representam o fim de uma das chaves inseridas previamente, mas não necessariamente indicam o fim de um caminho, como pode ser visto no caminho à direita da figura (i ↦ n ↦ n).
+Conforme pode ser observado pela Figura 1, a conexão de um nó para seus filhos é feita por meio de caracteres. Os nós "terminais" estão representados em vermelho e representam o fim de uma das chaves inseridas previamente, mas não necessariamente indicam o fim de um caminho, como pode ser visto no caminho à direita da figura (i ↦ n ↦ n).
 
 #### Funcionamento do Algoritmo
 
@@ -227,6 +227,8 @@ Em tarefas de detecção de padrões em texto, o algoritmo Aho-Corasick permite 
   <img src="./imgs/AhoCorasick.png" width="500">
   <figcaption>Figura 2: <i>Visualização do algoritmo de Aho-Corasick</i></figcaption>
 </figure>
+
+Conforme mostra a Figura 2, o Aho-Corasick adiciona o conceito de links (suffix e output) à Trie, permitindo uma busca não só pelos prefixos das palavras, mas também por sufixos. Nessa figura, ligações azuis indicam suffix links, enquanto que ligações verdes indicam output links, incrementando às ligações convencionais da trie (em preto, ligação de nó pai com seus filhos).
 
 #### Funcionamento do Algoritmo
 
