@@ -37,17 +37,18 @@ if [ -n "$2" ] && [[ ! " ${benchmarks[*]} " =~ " ${2} " ]]; then
 fi
 
 results_dir=out/results
+scripts_dir=scripts/python
 
 if [ ! -d $results_dir ] || [ ! -d out/graphs ]; then
     mkdir -p out/{results,graphs}
 fi
 
 if [ ! -f data/bad_words/formatted.csv ] || [ ! -f data/good_words/formatted.txt ]; then
-    python3 scripts/python/format_wordlist.py
+    python3 $scripts_dir/generate/format_wordlist.py
 fi
 
 if [ ! -d data/sentences ]; then
-    python3 scripts/python/sentences_generator.py
+    python3 $scripts_dir/generate/sentences_generator.py
 fi
 
 if [[ -v classes[${1}] ]]; then
@@ -59,7 +60,7 @@ else
 fi
 
 if [ -n "$1" ]; then
-    run_comp=$2
+    run_comp=$1
 else
     run_all=yes
 fi
@@ -80,7 +81,7 @@ fi
 # velocidade de busca em frases e detecção
 if [[ $run_comp == phrases ]] || [ -n "$run_all" ]; then
     if [ ! -f $results_dir/search_phrases_efficiency.csv ]; then
-        echo "\"Benchmark\",\"Correctly Identified\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
+        echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Param: phraseSize\",\"Category\"" > $results_dir/search_phrases_efficiency.csv
     fi
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000,5000,10000
 fi

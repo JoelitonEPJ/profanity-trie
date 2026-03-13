@@ -21,7 +21,7 @@ public class FileUtils {
     private static final Path RESULTS_DIR   = Paths.get("out",  "results");
 
     private static final Path GOOD_WORDS_FILE = Paths.get("data", "good_words", "formatted.txt");
-    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.txt");
+    private static final Path BAD_WORDS_FILE  = Paths.get("data", "bad_words",  "formatted.csv");
     private static final Path LEET_CODES_FILE = Paths.get("data", "leet_codes.csv");
 
     public static String[] readFile(Path caminho) {
@@ -154,15 +154,18 @@ public class FileUtils {
      * @return an array of pairs with the following structure { phrase, badWordsCount }
      */
     @SuppressWarnings("unchecked")
-    public static Pair<String, Integer>[] readPhrases(int phraseSize) {
+    public static Map<WordCategory, List<Pair<String, Integer>>> readPhrases(int phraseSize) {
 
         String arquivo = "frases_" + phraseSize + "_palavras.csv";
         String[] linhas = readFile(SENTENCES_DIR.resolve(arquivo));
 
-        Pair<String, Integer>[] phrases = new Pair[linhas.length - 1];
+        Map<WordCategory, List<Pair<String, Integer>>> phrases = new HashMap<>();
         for (int i = 1; i < linhas.length; i++) {
-            String[] phraseBadWordCount = linhas[i].split(",");
-            phrases[i - 1] = new Pair(phraseBadWordCount[0], Integer.valueOf(phraseBadWordCount[1]));
+            String[] linha = linhas[i].split(",");
+            WordCategory category = WordCategory.getCategory(linha[2]);
+
+            phrases.putIfAbsent(category, new ArrayList<>());
+            phrases.get(category).add(new Pair<>(linha[0], Integer.valueOf(linha[1])));
         }
 
         return phrases;
@@ -175,14 +178,15 @@ public class FileUtils {
      */
     public static Map<WordCategory, List<String>> readWords() {
 
-        String[] linhas = readFile(SENTENCES_DIR.resolve("words.csv"));
+        String[] linhas = readFile(SENTENCES_DIR.resolve("sample_words.csv"));
         Map<WordCategory, List<String>> words = new HashMap<>();
 
         for (int i = 1; i < linhas.length; i++) {
             String[] categorizedWords = linhas[i].split(",");
             WordCategory category = WordCategory.getCategory(categorizedWords[1]);
 
-            words.putIfAbsent(category, new ArrayList<>()).add(categorizedWords[0]);
+            words.putIfAbsent(category, new ArrayList<>());
+            words.get(category).add(categorizedWords[0]);
         }
 
         return words;
@@ -191,19 +195,22 @@ public class FileUtils {
     /**
      * Saves (overriding, if necessary) the results of the new searchPhrases run.
      * 
-     * @param className      name of the class to be recorded
-     * @param correctAmount  how many bad_words_count were correct
-     * @param phraseSize     the phrase size used for this comparison
+     * @param className   name of the class to be recorded
+     * @param correct     how many bad word counts were correct for this category
+     * @param missed      how many bad word counts were incorrect for this category
+     * @param phraseSize  the phrase size used for this comparison
+     * @param category    the category to be saved
      */
-    public static void savePhrasesResult(String className, int correctAmount, int phraseSize) {
+    public static void savePhrasesResult(String className, int correct, int missed, int phraseSize, String category) {
         final Path filePath = RESULTS_DIR.resolve("search_phrases_efficiency.csv");
 
-        String lineToSave = className + "," + correctAmount + "," + phraseSize;
+        String lineToSave = className + "," + correct + "," + missed + "," + phraseSize + "," + category;
         List<String> linhas = new ArrayList<>();
         if (Files.exists(filePath)) Collections.addAll(linhas, readFile(filePath));
 
         for (int i = 1; i < linhas.size(); i++) {
-            if (linhas.get(i).startsWith(className) && linhas.get(i).endsWith("," + phraseSize)) {
+            String linha = linhas.get(i);
+            if (linha.startsWith(className) && linha.contains("," + phraseSize + ",") && linha.endsWith(category)) {
                 linhas.set(i, lineToSave);
 
                 saveFileContent(filePath, linhas);
@@ -216,7 +223,7 @@ public class FileUtils {
     }
 
     /**
-     * Saves (overriding, if necessary) the results of the new searchPhrases run.
+     * Saves (overriding, if necessary) the results of the new queryWords run.
      * 
      * @param className  name of the class to be recorded
      * @param correct    how many bad words were correctly identified for this category
@@ -227,7 +234,8 @@ public class FileUtils {
         final Path filePath = RESULTS_DIR.resolve("query_words_efficiency.csv");
 
         String lineToSave = className + "," + correct + "," + missed + "," + category;
-        List<String> linhas = Arrays.asList(readFile(filePath));
+        List<String> linhas = new ArrayList<>();
+        if (Files.exists(filePath)) Collections.addAll(linhas, readFile(filePath));
 
         for (int i = 1; i < linhas.size(); i++) {
             if (linhas.get(i).startsWith(className) && linhas.get(i).endsWith(category)) {

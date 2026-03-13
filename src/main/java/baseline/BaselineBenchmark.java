@@ -3,17 +3,21 @@ package baseline;
 import util.BenchmarkConfig;
 
 public class BaselineBenchmark extends BenchmarkConfig {
+
+    private Baseline benchmarkBaseline;
+    
     @Override
     public void addWords(String[] words) {
+        benchmarkBaseline = new Baseline(words);
     }
 
     @Override
     public int countBadWords(String phrase) {
-        return 0;
+        return benchmarkBaseline.countBadWords(phrase);
     }
 
     @Override
     public boolean checkIsBadWord(String word) {
-        return false;
+        return benchmarkBaseline.isBadWord(word);
     }
 }

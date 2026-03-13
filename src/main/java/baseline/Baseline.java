@@ -1,15 +1,13 @@
 package baseline;
 
-import java.util.ArrayList;
-
-import util.FileUtils;
+import java.util.Arrays;
 
 public class Baseline {
     
     private String[] badWords;
 
     public Baseline(String[] badWords){
-        this.badWords = badWords;
+        this.badWords = Arrays.copyOf(badWords, badWords.length);
     }
 
     public boolean isBadWord(String palavra){
@@ -20,17 +18,16 @@ public class Baseline {
         return false;
     }
 
-    public ArrayList<Integer> hasBadWord(String frase) {
-        ArrayList<Integer> posicaoBadWords = new ArrayList<>();
+    public int countBadWords(String frase) {
+        int count = 0;
         String[] entrada = frase.split(" ");
 
         for(int i = 0; i < entrada.length; i++){
             if(isBadWord(entrada[i])){
-                posicaoBadWords.add(i);
+                count++;
             }
         }
 
-        if(posicaoBadWords.isEmpty()) return null;
-        return posicaoBadWords;
+        return count;
     }
 }
