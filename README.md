@@ -402,15 +402,15 @@ Novamente, o Regex apresentou um desempenho muito inferior aos outros métodos, 
   <figcaption>Figura 7: <i>Comparação da Performance na Análise de Frases (Sem Regex)</i></figcaption>
 </figure>
 
-Como é possível observar, a HashTable teve o melhor desempenho, pelo seu algoritmo simples de tokenização e eficiência em busca. Dessa vez, porém, o Baseline não se destacou, visto que, por ser um array simples, a busca é O(n) e, considerando o k = quantidade de palavras na frase, a busca para uma frase seria O(n*k), o que aumenta consideravelmente o tempo de busca.
+Como esperado pela sua complexidade média O(1) para busca, acoplado ao algoritmo simples de tokenização da frase em palavras, a HashTable teve o melhor desempenho médio (≈492ms para frases com 10000 palavras) para a contagem de palavras ofensivas. O Baseline, por sua vez, teve a pior performance, o que era esperado, já que sua complexidade de busca para uma frase é O(n · m), onde m é o tamanho da frase, tendo ordem de crescimento linear.
 
-A Trie teve uma das melhores, demorando consistentemente menos de 1 segundo até com 1000 iterações com 10000 palavras. Isso se deve pelo algoritmo de sliding window utilizado na contagem de palavras, que permite saltar pontos já vistos rapidamente. Por fim, o algoritmo de Aho-Corasick se manteve abaixo dos 4 segundos em todos os casos, porém, foi mais lento que ambos a Trie e a HashTable. O motivo para isso acontecer é que a Aho-Corasick procura em múltiplas partes por uma correspondência ao padrão, o que, quando comparado à Trie ou à HashTable, que assim que acharem algum vão pro próximo, traz uma redução de performance. 
+A Trie teve uma das melhores performances dentre os métodos analisados, consistentemente menos de 1 segundo até com 1000 iterações com 10000 palavras. Isso se deve pelo algoritmo de sliding window utilizado na contagem de palavras, que permite saltar pontos já vistos rapidamente. Por fim, o algoritmo de Aho-Corasick se manteve abaixo dos 4 segundos em todos os casos, porém, foi mais lento que ambos a Trie e a HashTable. A explicação para o desempenho inferior é a maneira que esse algoritmo busca por padrões na frase, guardando os padrões encontrados em um set para não repetir o mesmo caminho, o que gera um maior custo.
 
 3. **Capacidade de Detecção em Frases**
 
-Juntamente ao teste de performance, também foi feito paralelamente um teste para medir a capacidade de detecção de cada estrutura em frases, analisando se elas conseguiam identificar corretamente a quantidade de palavras ofensivas na frase, e se não, qual foi a maior margem de erro de cada método para cada categoria.
+Juntamente ao teste de performance, também foi feito paralelamente um teste para medir a capacidade de detecção de palavras ofensivas na frase para cada estrutura, analisando se elas conseguiam identificar corretamente a quantidade de "bad words" para cada categoria. Além disso, também é recordado a maior margem de erro de cada método para comparação, com o propósito de aprofundar a análise.
 
-Vale destacar que análise será feita apenas para as frases de 1000 palavras, já que, nas outras, o comportamento é mantido
+#### Frases com 1000 palavras
 
 <div align="center">
 
@@ -438,9 +438,25 @@ Tabela 1: Razão *Correto/Incorreto* do método para cada categoria
 Tabela 2: Maior margem de erro do método para cada categoria
 </div>
 
-Como era de se esperar, a HashTable e a Baseline tiveram um desempenho bom somente para palavras sem variação (das categorias `None` e `Good Word`), porém, com qualquer variação adicional, ambos os métodos não conseguem detectar. Dentre os três restantes, a Trie e o Regex tiveram uma perfomance similar, com uma margem de erro relativamente baixa para todas as categorias, com exceção da categoria `Stretched` para a Trie, em que ela teve uma performance bem inferior.
+Como era de se esperar, os métodos com correspondência direta, nomeadamente, a HashTable e a Baseline se destacaram na detecção de frases sem formatação adicional. Como ambos utilizam um simples método de tokenização da frase, para frases não ofuscadas com quaisquer técnicas, ambos tiveram um pontuações perfeitas. Entretando, qualquer variação simples, mesmo que se resuma à mudança na capitalização de alguma letra, fazem sua capacidade de detecção despencar.
 
-A Aho-Corasick teve uma performance inferior ao restante, tanto no nível de detecção quando na margem de erro. Isso se deve pela quantidade de falsos positivos que ela detecta nas frases, já que ela pode contar múltiplas ocorrências de palavras ofensivas em uma única palavra, o que indica que ela sofreria do Problema de Scunthorpe discutido anteriormente.
+Dentre os três métodos restantes, especializados em detecção de padrões em strings e que utilizam um mecanismo mais complexo do que simples comparação, a Trie e o Regex tiveram um desempenho similar para frases com nenhuma formatação ou apenas capitalizadas de maneira diferente. Porém, cada uma delas apresentou forças e fraquezas em diferentes áreas.
+
+A Trie teve dificuldade maior em detectar palavras alongadas e foi enganada também por falsos positivos, mesmo que seu índice de erro para falsos positivos tenha sido baixo (6 ou menos), ela consistentemente teve erros ao analisar a frase. Já o regex, por sua vez, teve uma grande dificuldade em detectar palavras espaçadas e codificadas, provavelmente pela dificuldade de definição de fronteiras para caracteres não-ascii e com espaçamento interno.
+
+Por fim, o algoritmo de Aho-Corasick teve uma performance inferior ao restante, tanto no nível de detecção quando na margem de erro (consistentemente apresentou uma margem erro maior do que 90). Isso se deve pela quantidade de falsos positivos que ela detecta nas frases, já que ela pode contar múltiplas ocorrências de palavras ofensivas em uma única palavra, o que indica que ela sofreria do Problema de Scunthorpe discutido anteriormente.
+
+#### Frases de 5000 palavras
+
+|    Método    | None | Upper | Good Word | Spaced | Encoded | Stretched |
+|:------------:|:----:|:-----:|:---------:|:------:|:-------:|:---------:|
+| Aho-Corasick | 0/177 | 0/184 | 0/163 | 0/163 | 0/161 | 0/152 |
+|   Baseline   | 177/0 | 0/184 | 163/0 | 0/163 | 0/161 | 0/152 |
+|   HashTable  | 177/0 | 0/184 | 163/0 | 0/163 | 0/161 | 0/152 |
+|     Regex    | 8/169 | 6/178 | 113/50 | 9/154 | 0/161 | 7/145 |
+|     Trie     | 4/173 | 5/179 | 1/162 | 8/155 | 2/159 | 0/152 |
+
+Comparado às frases de 1000, é possível notar que o desempenho das estruturas que não utilizam correspondência direta cai conforme aumenta o tamanho da frase, já que a chance de ocorrer falsos positivos aumenta.
 
 ### Detecção de Palavras
 

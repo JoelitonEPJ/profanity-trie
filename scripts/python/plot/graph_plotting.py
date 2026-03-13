@@ -3,6 +3,7 @@ from pathlib import Path
 from numpy import arange
 
 import matplotlib.pyplot as plt
+from sys import argv
 import csv
 
 ROOT_DIR = Path(__file__).parents[3]
@@ -186,6 +187,11 @@ def formata_mins(num, pos):
 
 
 if __name__ == "__main__":
-    # insertion_memory_usage_benchmark_plot()
-    # insertion_speed_benchmark_plot()
-    search_phrases_speed_plot()
+    option = argv[1] if len(argv) > 1 else None
+
+    if option == 'insert' or not option:
+        insertion_speed_benchmark_plot()
+    if option == 'memory' or not option:
+        insertion_memory_usage_benchmark_plot()
+    if option == 'phrases' or not option:
+        search_phrases_speed_plot()

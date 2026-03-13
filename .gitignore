@@ -28,6 +28,9 @@
 # maven
 target/
 
+# python
+.venv/
+
 # Arquivos/diretórios gerados
 data/*_words/formatted.*
 data/sentences
