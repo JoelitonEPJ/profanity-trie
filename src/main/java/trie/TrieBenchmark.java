@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import util.BenchmarkConfig;
-import util.Pair;
 import util.FileUtils;
+import util.Pair;
 
 public class TrieBenchmark extends BenchmarkConfig {
 
