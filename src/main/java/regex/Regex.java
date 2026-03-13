@@ -1,20 +1,17 @@
 package regex;
 
-import java.util.regex.Pattern;
+import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Regex {
     
     private Pattern pattern;
+    private Map<Character, String[]> leetMap;
 
-    public Regex(String pattern) {
-        this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public Regex(String[] palavras, HashMap<Character, String[]> leets) {
-        buildPattern(palavras, leets);
+    public Regex(String[] pattern, Map<Character, String[]> leetMap) {
+        this.leetMap = leetMap;
+        this.pattern = Pattern.compile(buildPattern(pattern), Pattern.CASE_INSENSITIVE);
     }
 
     public void setPattern(String pattern) {
@@ -25,37 +22,53 @@ public class Regex {
         return pattern.matcher(entrada);
     }
 
-    public ArrayList<String> listarMatches(String entrada) {
-        ArrayList<String> matches = new ArrayList<>();
+    public int countMatches(String entrada) {
+        int counter = 0;
 
         Matcher matcher = matcher(entrada);
         while (matcher.find()) {
-            matches.add(matcher.group());
+            counter++;
         }
 
-        return matches;
+        return counter;
     }
 
-    public void buildPattern(String[] palavras, HashMap<Character, String[]> leetMap) {
-        StringBuilder pattern = new StringBuilder();
+    public boolean matches(String word) {
+        Matcher matcher = matcher(word);
 
-        String padrao = "";
+        return matcher.matches();
+    }
+
+    private void escapeReserved(String[] toEscape) {
+        for (int i = 0; i < toEscape.length; i++) {
+            if (toEscape[i].equals("|")) toEscape[i] = "\\\\|";
+            if (toEscape[i].equals("$")) toEscape[i] = "\\\\$";
+        }
+    }
+
+    public final String buildPattern(String[] palavras) {
+        StringBuilder padrao = new StringBuilder("(?<![A-Za-z0-9])(?:");
+
         for (int i = 0; i < palavras.length; i++) {
             char ultimoChar = 0;
-            String[] leets = {};
+            String[] leets;
+
             for (int j = 0; j < palavras[i].length(); j++) {
                 char charAtual = Character.toLowerCase(palavras[i].charAt(j));
-                leets = leetMap.get(charAtual);
+                if (ultimoChar == charAtual) continue;
 
-                if (ultimoChar != charAtual) padrao = "(?:" + String.join("|", leets) + ")+";
+                leets = leetMap.getOrDefault(charAtual, new String[] { "" + charAtual });
+                escapeReserved(leets);
+
+                padrao.append("(?:").append(String.join("|", leets)).append(")+");
+                if (j != palavras.length - 1) padrao.append("\\s*");
 
                 ultimoChar = charAtual;
             }
 
-            if (!(pattern.length() == 0)) pattern.append("|");
-            pattern.append(padrao); 
+            if (i != palavras.length - 1) padrao.append("|");
         }
 
-        this.pattern = Pattern.compile(pattern.toString(), Pattern.CASE_INSENSITIVE);
+        return padrao.append(")(?![A-Za-z0-9])").toString();
     }
 }
