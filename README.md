@@ -180,6 +180,30 @@ Apesar da velocidade superior de busca, a estrutura traz trade-offs importantes 
 
 ### Trie
 
+A estrutura de Trie (também conhecida como Árvore de Prefixos) introduz uma abordagem fundamentalmente diferente e mais sofisticada para a busca de palavras em relação aos métodos de Baseline e HashTable. No contexto do projeto, esta estrutura não apenas armazena o vocabulário unidimensionalmente, mas modela as palavras como caminhos sequenciais em uma árvore de caracteres. Essa abordagem se destaca por otimizar o armazenamento de palavras com prefixos em comum e por habilitar buscas complexas e tolerantes a variações textuais de forma eficiente.
+
+#### Funcionamento do Algoritmo
+
+A implementação da Trie para este filtro foi desenhada para ir além da busca exata, focando no combate contra técnicas de ofuscação e Leet Speak (substituição de letras por símbolos). O fluxo ocorre da seguinte maneira:
+
+**Inicialização e Armazenamento**: Durante a instanciação, a Trie constrói a árvore inserindo caractere por caractere das palavras da blacklist. Cada Node armazena um HashMap de seus nós filhos, além de marcadores booleanos (end e isBadNode). O construtor recebe um mapa de dicionário (leetMap), que dita o motor de substituição. Adicionalmente, a implementação permite sinalizar nós intermediários como inválidos através de índices (via wordsFirstPrefix), bloqueando raízes perigosas antes mesmo da palavra terminar.
+
+**Processamento de Ruídos e Evasões**: Ao contrário de estruturas de busca rígidas, a travessia na Trie implementada ignora ativamente caracteres de ofuscação configurados, como o hífen (-). Quando o algoritmo encontra esse caractere no método findLongestBadWordIndex, ele avança a leitura da frase iterativamente sem alterar seu estado na árvore, frustrando tentativas de mascarar palavras (ex: "b-a-d-w-o-r-d").
+
+**Busca Dinâmica com LeetMap**: O algoritmo não busca o caractere exato digitado na árvore de forma determinística. Ele consulta o leetMap para obter uma lista de possibilidades. Por exemplo, se o usuário digita '@', o mapa sugere verificar o caminho 'a'. O algoritmo explora esses caminhos alternativos dinamicamente através de chamadas recursivas.
+
+**Contagem e Maximização de Ocorrências**: O método countBadWords itera sobre a frase e utiliza uma busca em profundidade para encontrar a maior correspondência possível a partir do índice atual. Ao encontrar uma ofensa validada por um nó terminal (end) ou raiz bloqueada (isBadNode), uma variável de contagem é incrementada e o ponteiro de leitura da frase principal salta o tamanho da palavra encontrada, evitando a contagem duplicada de fragmentos sobrepostos.
+
+#### Análise e Contextualização
+
+A principal vantagem da Trie implementada deverá ser evidenciada nos testes de "Eficácia de Detecção" e "Busca com Ofuscação". Enquanto a HashTable e o Baseline possuem uma restrição severa de que a palavra recebida deve ser idêntica à cadastrada, a Trie manterá uma alta taxa de acerto devido à sua integração com o leetMap e sua capacidade de lidar com delimitadores. Ela resolve o problema da ofuscação de forma nativa, sem a necessidade de superlotar a blacklist com todas as variações possíveis de uma mesma ofensa.
+
+Apesar da capacidade de detecção vastamente superior, a estrutura traz trade-offs importantes que impactarão os resultados de performance:
+
+**Consumo de Memória**: É esperado que a Trie apresente um custo de memória considerável. Embora economize espaço ao compartilhar prefixos (como as letras iniciais de "mal" e "maldade"), cada letra individual exige a alocação de um objeto Node, que por sua vez inicializa seu próprio HashMap interno de filhos. Esse aninhamento gera um overhead significativo de referências na memória em comparação a um HashSet de Strings inteiras.
+
+**Complexidade e Tempo de Execução**: A complexidade de tempo de busca pura teórica em uma Trie é O(M), onde M é o tamanho da palavra buscada. Contudo, devido à funcionalidade adaptativa de Leet Speak e à busca recursiva que explora múltiplas possibilidades de caracteres simultaneamente, o tempo de execução no pior cenário será levemente superior à verificação matemática de O(1) da HashTable. Ainda assim, é um custo de processamento justificado e necessário para se obter uma moderação de texto precisa.
+
 ---
 
 ### Regex
