@@ -31,6 +31,7 @@ def get_words(good=True):
     return good_words, bad_words
 
 def gera_frases():
+    random.seed(SEED)
     print(f"info: Generating sample sentences at `{SENTENCES_DIR}`...")
 
     good_words, bad_words = get_words()
@@ -69,6 +70,7 @@ def gera_frases():
             print(f"    info: {quant} samples for category `{category}`{'':<{pad_amount}} were generated")
 
 def gera_palavras():
+    random.seed(SEED)
     print(f"info: Generating sample words at `{SENTENCES_DIR}`...")
 
     _, bad_words = get_words(good=False)
@@ -89,7 +91,7 @@ def gera_palavras():
             if category == "good_word":
                 word = random.choice(hidden_bad_words).strip()
             elif category != "none":
-                word = modifier(word, leet_dict, category).strip()
+                word = modifier_obligatory(word, leet_dict, category)
 
             writer.writerow([word, category])
         
@@ -113,6 +115,15 @@ def encoder(letra, leet_dict):
         return random.choice(leet_dict[letra])
 
     return letra
+
+def modifier_obligatory(palavra, leet_dict, mod):
+    while True:
+        out = modifier(palavra, leet_dict, mod)
+        tres_seguidas = any((out.count(char) > 3 and char * 3 in out for char in out)) and mod == "stretched"
+        codificado = not out.isascii() and mod == "encoded"
+        capitalizado = out.lower() != out and mod == "upper"
+        if " " in out or codificado or capitalizado or tres_seguidas:
+            return out
 
 def modifier(palavra, leet_dict, modifier):
     out = ""
@@ -160,7 +171,6 @@ def get_hidden_bad_words():
 
 # rode dessa maneira: python sample_generator.py [sentences|words]
 if __name__ == "__main__":
-    random.seed(SEED)
     generate = argv[1] if len(argv) > 1 else "all"
 
     if generate != "words":

@@ -223,6 +223,11 @@ Apesar da capacidade de detecção vastamente superior, a estrutura traz trade-o
 
 Em tarefas de detecção de padrões em texto, o algoritmo Aho-Corasick permite a busca simultânea de múltiplos padrões por meio da construção de um autômato baseado em uma trie com links de falha, tornando o processo eficiente mesmo para grandes conjuntos de palavras. Essa característica é especialmente útil no nosso contexto de detecção de bad words, pois foi possível adaptar o método para reconhecer variações de escrita, incluindo formas de L33T, utilizando um mapa de interpretações que evita o armazenamento de todas as variações possíveis
 
+<figure align="center">
+  <img src="./imgs/AhoCorasick.png" width="500">
+  <figcaption>Figura 2: <i>Visualização do algoritmo de Aho-Corasick</i></figcaption>
+</figure>
+
 #### Funcionamento do Algoritmo
 
 A implementação se estrutura em três fases principais:
@@ -332,7 +337,7 @@ O objetivo dessa análise é comparar a velocidade de inserção dos cinco méto
 
 <figure align="center">
   <img src="./out/graphs/insert_all_speed_benchmark.png"  width="480">
-  <figcaption>Figura 2: <i>Comparação da Velocidade de Inserção</i></figcaption>
+  <figcaption>Figura 3: <i>Comparação da Velocidade de Inserção</i></figcaption>
 </figure>
 
 1. **Métricas Chave e Dados Brutos**
@@ -347,19 +352,13 @@ Mesmo internamente tendo uma estrutura muito similar à Trie, o algoritmo de Aho
 
 O principal ponto negativo dessa comparação foi o Regex, que teve uma performance **8x pior** do que qualquer outro método analisado. Essa discrepância vem da compilação envolvida ao criar um objeto `Pattern`, que envolve a validação e análise do padrão, o transformando em uma representação mais eficiente para buscas, geralmente um FSM (Autômato Finito Determinístico), que causa uma lentidão maior para processar os dados inseridos.
 
-<!-- TODO: adicionar de volta? -->
-<!-- <figure align="center">
-  <img src="./out/graphs/insert_all_speed_benchmark_without_regex.png" width="480">
-  <figcaption>Figura 3: <i>Comparação da Velocidade de Inserção (Sem Regex)</i></figcaption>
-</figure> -->
-
 ### Consumo de Memória
 
 O propósito desse experimento é comparar o consumo de memória entre as estratégias implementadas pós inserção de 10<sup>5</sup> elementos, investigando qual método ocuparia um espaço menor de memória.
 
 <figure align="center">
   <img src="./out/graphs/insert_all_memory_usage.png">
-  <figcaption>Figura 3: <i>Comparação do Consumo de Memória</i></figcaption>
+  <figcaption>Figura 4: <i>Comparação do Consumo de Memória</i></figcaption>
 </figure>
 
 1. **Métricas Chave e Dados Brutos**
@@ -372,11 +371,11 @@ Novamente, é possível notar um desempenho superior da Baseline e da HashTable 
 
 A Aho-Corasick e Trie tiveram um consumo bem similar, ambos *≈20MB*. Porém, é possível notar que a Trie teve um desempenho inferior nesse quesito, que pode ser explicado pela diferença de implementação dos nós. Na Aho-Corasick, a implementação base retirada do TheAlgorithms utiliza uma tabela de acesso direto para fazer a conexão de nós, que é mais eficiente no quesito de memória do que o HashMap utilizado com esse mesmo propósito pela Trie.
 
-Por fim, o Regex novamente teve o pior desempenho dentre os 5 métodos. Isso pode ser explicado pelo fato de que ela é a única estrutura que guarda todas as variações leet das letras ao salvar o padrão, ocupando uma grande quantidade de memória, quando comparada às demais.
+Por fim, o Regex novamente teve o pior desempenho dentre os 5 métodos. Isso pode ser explicado pelo fato de que ela é a única estrutura que guarda todas as variações leet das letras ao salvar o padrão, ocupando uma grande quantidade de memória, quando comparada às demais. Dessa forma, para melhor analisar as outras estruturas, foi feito um gráfico adicional sem o regex.
 
 <figure align="center">
   <img src="./out/graphs/insert_all_memory_usage_without_regex.png">
-  <figcaption>Figura 4: <i>Comparação do Consumo de Memória (Sem Regex)</i></figcaption>
+  <figcaption>Figura 5: <i>Comparação do Consumo de Memória (Sem Regex)</i></figcaption>
 </figure>
 
 Observando o gráfico sem o Regex, é possível perceber ainda mais a eficiência de memória da Baseline e da HashTable, ambas tendo gasto menos de 1MB de memória mesmo sendo preenchidas com mais de 10<sup>5</sup> elementos.
@@ -387,7 +386,7 @@ O objetivo desse experimento é comparar a velocidade de processamento e eficiê
 
 <figure align="center">
   <img src="./out/graphs/search_phrases_speed_benchmark_with_regex.png">
-  <figcaption>Figura 4: <i>Comparação da Performance na Análise de Frases</i></figcaption>
+  <figcaption>Figura 6: <i>Comparação da Performance na Análise de Frases</i></figcaption>
 </figure>
 
 1. **Métricas Chave e Dados Brutos**
@@ -400,7 +399,7 @@ Novamente, o Regex apresentou um desempenho muito inferior aos outros métodos, 
 
 <figure align="center">
   <img src="./out/graphs/search_phrases_speed_benchmark.png">
-  <figcaption>Figura 5: <i>Comparação da Performance na Análise de Frases (Sem Regex)</i></figcaption>
+  <figcaption>Figura 7: <i>Comparação da Performance na Análise de Frases (Sem Regex)</i></figcaption>
 </figure>
 
 Como é possível observar, a HashTable teve o melhor desempenho, pelo seu algoritmo simples de tokenização e eficiência em busca. Dessa vez, porém, o Baseline não se destacou, visto que, por ser um array simples, a busca é O(n) e, considerando o k = quantidade de palavras na frase, a busca para uma frase seria O(n*k), o que aumenta consideravelmente o tempo de busca.
@@ -439,9 +438,9 @@ Tabela 1: Razão *Correto/Incorreto* do método para cada categoria
 Tabela 2: Maior margem de erro do método para cada categoria
 </div>
 
-Como era de se esperar, HashTable e Baseline tiveram um desempenho bom somente para palavras sem variação (das categorias `None` e `Good Word`), porém, com qualquer variação adicional, ambos os métodos não conseguem detectar. Dentre os três restantes, a Trie e o Regex tiveram uma perfomance similar, com uma margem de erro relativamente baixa para todas as categorias, com exceção da categoria `Stretched` para a Trie, em que ela teve uma performance bem inferior.
+Como era de se esperar, a HashTable e a Baseline tiveram um desempenho bom somente para palavras sem variação (das categorias `None` e `Good Word`), porém, com qualquer variação adicional, ambos os métodos não conseguem detectar. Dentre os três restantes, a Trie e o Regex tiveram uma perfomance similar, com uma margem de erro relativamente baixa para todas as categorias, com exceção da categoria `Stretched` para a Trie, em que ela teve uma performance bem inferior.
 
-A Aho-Corasick teve uma performance inferior ao restante também. Isso se deve pela quantidade de falsos positivos que ela detecta nas frases, já que ela pode contar múltiplas ocorrências de palavras ofensivas em uma única palavra, o que indica que ela sofreria do Problema de Scunthorpe discutido anteriormente.
+A Aho-Corasick teve uma performance inferior ao restante, tanto no nível de detecção quando na margem de erro. Isso se deve pela quantidade de falsos positivos que ela detecta nas frases, já que ela pode contar múltiplas ocorrências de palavras ofensivas em uma única palavra, o que indica que ela sofreria do Problema de Scunthorpe discutido anteriormente.
 
 ### Detecção de Palavras
 
@@ -449,42 +448,71 @@ O objetivo dessa comparação foi analisar a capacidade de detectar palavras de 
 
 1. **Métricas Chave e Dados Brutos**
 
-> A métrica principal a ser analisada é a Razão entre Correto/Incorreto, que indica a quantidade de palavras que foram avaliadas corretamente. Como dados de entrada, foram utilizados arquivos gerados pelo script [sample_generator.py](./scripts/python/generate/sample_generator.py), cria palavras aleatórias, categorizando-as de acordo com o que foi feito.
+> A métrica principal a ser analisada é a Razão entre Correto/Incorreto, que indica a quantidade de palavras que foram avaliadas corretamente. Como dados de entrada, foram utilizados arquivos gerados pelo script [sample_generator.py](./scripts/python/generate/sample_generator.py), cria palavras aleatórias, categorizando-as de acordo com as alterações que foram aplicadas nela.
 
 <div align="center">
 
 |    Método    | None | Upper | Good Word | Spaced | Encoded | Stretched |
 |:------------:|:----:|:-----:|:---------:|:------:|:-------:|:---------:|
-| Aho-Corasick | 1675/0 | 1673/0 | 0/1670 | 26/1570 | 1217/457 | 525/1187 |
-|   Baseline   | 1675/0 | 3/1670 | 1670/0 | 8/1588 | 21/1653 | 5/1707 |
-|   HashTable  | 1675/0 | 3/1670 | 1670/0 | 8/1588 | 21/1653 | 5/1707 |
-|     Regex    | 1675/0 | 1673/0 | 1670/0 | 1529/67 | 1570/104 | 1712/0 |
-|     Trie     | 1675/0 | 1673/0 | 1661/9 | 1596/0 | 1674/0 | 207/1505 |
+| Aho-Corasick | 1668/0 | 1703/0 | 0/1653 | 24/1588 | 1203/450 | 519/1192 |
+|   Baseline   | 1668/0 | 0/1703 | 1653/0 | 0/1612 | 0/1653 | 0/1711 |
+|   HashTable  | 1668/0 | 0/1703 | 1653/0 | 0/1612 | 0/1653 | 0/1711 |
+|     Regex    | 1668/0 | 1703/0 | 1653/0 | 1542/70 | 1553/100 | 1711/0 |
+|     Trie     | 1668/0 | 1703/0 | 1644/9 | 1612/0 | 1653/0 | 204/1507 |
 
 Tabela 3: Razão *Correto/Incorreto* do método para cada categoria
 </div>
 
 2. **Análise dos resultados**
 
-Os resultados dessa comparação foram muito similares aos obtidos após das frases, com exceção da Aho-Corasick, em que é possível observar uma melhora significativa em todas as categorias exceto as de `Spaced` e `Good Word`
+Observando os resultados obtidos, é possível perceber que os comportamentos seguem tendências semelhantes às observadas no experimento anterior. Nos casos em que não há modificação na palavra, métodos com correspondência direta apresentam ótimo desempenho, já que a verificação é basicamente uma comparação direta. Porém, ao introduzir qualquer modificação simples, métodos desse tipo possuem uma queda abrupta na detecção.
 
-## Considerações finais
+Por outro lado, métodos que analisam a nível de caractere, como Regex, Trie e Aho-Corasick, conseguem manter taxas de acerto significativamente maiores nessas categorias. O Regex apresentou resultados fortes em categorias com variações estruturais mais complexas, como `Spaced` e `Stretched`. Isso é resultado natureza das expressões regulares, cujo padrões aceitam repetições de caracteres, espaçamentos ou substituições.
+
+A Trie também apresentou desempenho elevado em várias categorias, especialmente nas variações codificadas (`Encoded`). Isso ocorre porque o algoritmo explora diferentes interpretações de caracteres, permitindo identificar mesmo quando o texto contém substituições. Entretanto, observa-se uma queda significativa no seu desempenho na categoria `Stretched`. Esse comportamento ocorre porque a repetição de caracteres no começo de uma palavra impossibilita a busca por prefixos da maneira que foi implementada
+
+O algoritmo Aho-Corasick apresentou bons resultados em várias categorias, mas demonstrou uma pior eficiência em cenários com inserção de espaços ou outras modificações estruturais. Isso se deve ao fato de que o autômato depende de transições bem definidas entre caracteres e, quando essas transições são quebradas, a capacidade de detecção diminui.
 
 ## Ameaças à validade
 
 1. O experimento foi conduzido com tamanho máximo de entrada de 10<sup>5</sup> para inserção, o que, em contextos globais, pode não ser suficiente para acomodar todas as palavras consideradas ofensivas. Já para a busca, as estruturas tiveram apenas que comportar
 2. Como discutido anteriormente, uma das restrições desse experimento foi de que a string recebida não poderia ser modificada e deveria ser lida daquela maneira, o que atrapalhou significativamente o desempenho geral do Regex e de detecção da HashTable/Baseline. Em aplicações reais, uma restrição desse tipo não existiria e as estruturas citadas provavelmente apresentariam um desempenho melhor.
-3. Com o intuito de analisar o desempenho em casos extremos, as entradas utilizadas para testar a capacidade de detecção em frases chegaram à casa de 10<sup>7</sup> (1000 frases de 10000 palavras cada), porém, nos contextos onde esses filtros se mostram necessários, como chats de jogos e comentários em plataformas digitais, é comum que sentenças não tenham mais do que 300 palavras cada.
+3. Com o intuito de analisar o desempenho em casos extremos, as entradas utilizadas para testar a capacidade de detecção em frases chegaram à casa de 10<sup>7</sup> (1000 frases de 10000 palavras cada), porém, nos contextos onde esses filtros se mostram necessários, como chats de jogos e comentários em plataformas digitais, é comum que sentenças não tenham mais do que 100 palavras cada, o que pode diminuir a chance de falsos positivos.
 
 ### Experimento de Validação (Ameaça 3)
 
-| Método       | None | Upper | Spaced | Encoded | Stretched |
-|--------------|------|-------|--------|---------|-----------|
-| Aho-Corasick |      |       |        |         |           |
-| Baseline     |      |       |        |         |           |
-| HashTable    |      |       |        |         |           |
-| Regex        |      |       |        |         |           |
-| Trie         |      |       |        |         |           |
+Para investigar a possível influência do tamanho das frases nos resultados apresentados anteriormente (Ameaça 3), conduzimos um experimento adicional com entradas significativamente menores. Neste novo cenário, as frases geradas possuem 100 palavras, ao invés das ordens de magnitude maiores utilizadas nos experimentos principais. A redução do tamanho das frases diminui a quantidade de substrings possíveis dentro do texto, reduzindo a probabilidade de ocorrências acidentais de padrões da blacklist dentro de palavras normais. Logo, espera-se que algoritmos mais suscetíveis a falsos positivos apresentem desempenho melhor nesse cenário.
+
+#### Resultados do Experimento
+
+<div align="center">
+
+|    Método    | None | Upper | Good Word | Spaced | Encoded | Stretched |
+|:------------:|:----:|:-----:|:---------:|:------:|:-------:|:---------:|
+| Aho-Corasick | 13/53 | 0/171 | 0/162 | 0/165 | 0/166 | 0/174 |
+|   Baseline   | 162/0  | 0/171 | 162/0 | 0/165 | 0/166 | 0/174 |
+|   HashTable  | 162/0  | 0/171 | 162/0 | 0/165 | 0/166 | 0/174 |
+|     Regex    | 184/3  | 166/5 | 157/0 | 93/68 | 81/86 | 154/3 |
+|     Trie     | 176/11 | 165/6 | 147/10 | 148/13 | 162/5 | 0/157 |
+
+Tabela 4: Razão *Correto/Incorreto* do método para cada categoria
+</div>
+
+Os resultados indicam que, de fato, a redução no tamanho das frases diminui a ocorrência de falsos positivos em alguns métodos. Isso pode ser observado principalmente no algoritmo Aho-Corasick, que apresentou uma melhoria na categoria `Encoded`.
+
+Entretanto, mesmo com essa melhoria, o comportamento geral dos algoritmos permaneceu consistente com as conclusões anteriores. Métodos baseados em correspondência exata, como Baseline e HashTable, continuam incapazes de lidar com variações na escrita das palavras. Já abordagens mais flexíveis, como Regex e Trie, mantiveram taxas de detecção significativamente superiores na maioria das categorias.
+
+Dessa forma, apesar da mudança no tamanho das entradas reduzir parcialmente o impacto de falsos positivos, os resultados deste experimento de validação indicam que a Ameaça 3 não altera de forma significativa as conclusões gerais do estudo.
+
+## Considerações finais
+
+Este experimento teve como objetivo comparar diferentes estratégias de implementação de filtros de palavras ofensivas baseados em blacklists, analisando estruturas e algoritmos como HashTable, Regex, Trie e Aho-Corasick. A motivação principal foi avaliar como diferentes abordagens de busca em strings se comportam em cenários que simulam a moderação automática de conteúdo em plataformas digitais. Os resultados obtidos demonstram o que já era sabido: não existe uma solução única ideal para todos os cenários, cada método apresenta vantagens e limitações específicas.
+
+Do ponto de vista de desempenho, a HashTable se destacou como a abordagem mais rápida para a análise de frases, pela sua eficiência média O(1) de busca. No entanto, sua capacidade de detecção é extremamente limitada, já que só consegue identificar palavras que correspondem exatamente aos termos armazenados na blacklist. A Trie apresentou um bom equilíbrio entre desempenho e capacidade de detecção. Sua construção permitiu lidar melhor com variações de escrita e mecanismos de ofuscação simples.
+
+O algoritmo Aho-Corasick, na forma como foi aplicado neste experimento, teve um desempenho abaixo da Trie na análise de frases, além de apresentar maior incidência de falsos positivos devido à detecção de padrões sobrepostos dentro de palavras. Por fim, o Regex se destacou pela grande flexibilidade na identificação de padrões textuais e variações de escrita. Entretanto, esse ganho trouxe custos significativos tanto em tempo de execução quanto em consumo de memória, tornando essa abordagem menos adequada para cenários de grande escala ou aplicações em tempo real.
+
+De forma geral, os resultados indicam que estruturas especializadas em busca de padrões, como Trie e Aho-Corasick, oferecem vantagens importantes quando o objetivo é detectar palavras ofensivas mesmo sob tentativas de ofuscação. Por outro lado, abordagens mais simples como HashTable ainda podem ser extremamente eficientes em sistemas onde o desempenho é prioritário e as variações de escrita são limitadas. Dessa forma, a escolha da estratégia ideal depende diretamente das necessidades e limitações do sistema.
 
 ## Trabalhos Futuros
 
