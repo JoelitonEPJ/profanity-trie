@@ -22,10 +22,9 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 @State(Scope.Thread)
-// FIXME: alterar para os valores corretos
-@Fork(value = 1)
-@Warmup(iterations = 1, time = 1)
-@Measurement(iterations = 1, time = 1)
+@Fork(value = 5)
+@Warmup(iterations = 5, time = 5)
+@Measurement(iterations = 10, time = 5)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 abstract public class BenchmarkConfig {
@@ -112,8 +111,8 @@ abstract public class BenchmarkConfig {
 
                 if (badWordsCount == phrase.second()) {
                     countError.setFirst(countError.first() + 1);
-                } else if (Math.abs(phrase.second() - badWordsCount) > Math.abs(countError.second())) {
-                    countError.setSecond(phrase.second() - badWordsCount);
+                } else if (Math.abs(badWordsCount - phrase.second()) > Math.abs(countError.second())) {
+                    countError.setSecond(badWordsCount - phrase.second());
                 }
             }
         }
