@@ -3,6 +3,7 @@ from pathlib import Path
 from numpy import arange
 
 import matplotlib.pyplot as plt
+from sys import argv
 import csv
 
 ROOT_DIR = Path(__file__).parents[3]
@@ -34,7 +35,7 @@ def insertion_memory_usage_benchmark_plot():
         next(reader)
 
         for linha in reader:
-            if "norm" in linha[0]:
+            if "norm" in linha[0] and 'regex' not in linha[0]:
                 x.append(identifica_algoritmo(linha[0]))
                 y.append(float(linha[IDX_SCORE].replace(",", ".")) / (8 * 1024 * 1024))
         
@@ -56,7 +57,7 @@ def insertion_memory_usage_benchmark_plot():
 
     ax.grid(color="gray", axis="y", linestyle="dotted", alpha=0.3, zorder=1)
 
-    plt.savefig(GRAPHS_DIR/"insert_all_memory_usage.png", dpi=100, bbox_inches="tight")
+    plt.savefig(GRAPHS_DIR/"insert_all_memory_usage_without_regex.png", dpi=100, bbox_inches="tight")
 
 
 def insertion_speed_benchmark_plot():
@@ -185,16 +186,12 @@ def formata_mins(num, pos):
     return f"{mins:.0f}mins"
 
 
-def word_query_classification_plot():
-    x = []
-    y = []
-
-    with open(RESULTS_DIR/"word_query_benchmark.csv", "r") as csvfile:
-        reader = csv.reader(csvfile, delimiter=",")
-        next(reader)
-
-
 if __name__ == "__main__":
-    insertion_memory_usage_benchmark_plot()
-    insertion_speed_benchmark_plot()
-    search_phrases_speed_plot()
+    option = argv[1] if len(argv) > 1 else None
+
+    if option == 'insert' or not option:
+        insertion_speed_benchmark_plot()
+    if option == 'memory' or not option:
+        insertion_memory_usage_benchmark_plot()
+    if option == 'phrases' or not option:
+        search_phrases_speed_plot()

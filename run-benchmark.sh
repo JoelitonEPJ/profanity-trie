@@ -50,7 +50,7 @@ if [ ! -f data/bad_words/formatted.csv ] || [ ! -f data/good_words/formatted.txt
 fi
 
 if [ ! -d data/sentences ]; then
-    python3 $scripts_dir/generate/sentences_generator.py
+    python3 $scripts_dir/generate/sample_generator.py
 fi
 
 if [[ -v classes[${1}] ]]; then
@@ -70,14 +70,26 @@ fi
 mvn clean install
 mvn clean package
 
+if [ ! -d "$scripts_dir/plot/venv" ]; then
+    echo "info: creating python virtual environment"
+    python3 -m venv $scripts_dir/plot/.venv
+    source $scripts_dir/plot/.venv/bin/activate
+    pip install -r $scripts_dir/plot/requirements.txt
+else
+    source $scripts_dir/plot/.venv/bin/activate
+fi
+
+
 # performance de inserção
 if [[ $run_comp == insert ]] || [ -n "$run_all" ]; then
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -rf csv -rff $results_dir/insertion_perf.csv -p currentTest=insert
+    python3 $scripts_dir/plot/graph_plotting.py insert
 fi
 
 # consumo de memória 
 if [[ $run_comp == memory ]] || [ -n "$run_all" ]; then
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.insertAll" -prof gc -rf csv -rff $results_dir/memory_usage.csv -p currentTest=memory
+    python3 $scripts_dir/plot/graph_plotting.py memory
 fi
 
 # velocidade de busca em frases e detecção
@@ -86,6 +98,7 @@ if [[ $run_comp == phrases ]] || [ -n "$run_all" ]; then
         echo "\"Benchmark\",\"Correct Count\",\"Missed\",\"Margin of Error\"\"Category\",\"Param: phraseSize\"" > $results_dir/search_phrases_efficiency.csv
     fi
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.searchPhrases" -rf csv -rff $results_dir/search_phrases_perf.csv -p currentTest=phrases -p phraseSize=1000,5000,10000
+    python3 $scripts_dir/plot/graph_plotting.py phrases
 fi
 
 # velocidade de busca em palavras e detecção
@@ -95,5 +108,3 @@ if [[ $run_comp == words ]] || [ -n "$run_all" ]; then
     fi
     java -jar target/benchmarks.jar "${run_package}${run_class}Benchmark\.queryWords" -rf csv -rff $results_dir/query_words_perf.csv -p currentTest=words
 fi
-
-# TODO: gerar gráficos, fazer após já ter os benchmarks configurados
