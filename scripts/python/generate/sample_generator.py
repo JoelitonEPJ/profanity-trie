@@ -9,8 +9,9 @@ ROOT_DIR = Path(__file__).parents[3]
 DATA_DIR = ROOT_DIR/"data"
 GOOD_WORDS_DIR = DATA_DIR/"good_words"
 BAD_WORDS_DIR = DATA_DIR/"bad_words"
+SENTENCES_DIR = DATA_DIR/"sentences"
 
-MODIFIERS = ["hidden", "none", "upper", "spaced", "encoded", "stretched"]
+CATEGORIES = ["good_word", "none", "upper", "spaced", "encoded", "stretched"]
 TAM_FRASES_DEFAULT = [1000, 5000, 10000]
 QUANT_LINHAS_DEFAULT = 1000
 SEED = 33550336
@@ -30,56 +31,74 @@ def get_words(good=True):
     return good_words, bad_words
 
 def gera_frases():
+    print(f"info: Generating sample sentences at `{SENTENCES_DIR}`...")
+
     good_words, bad_words = get_words()
-    os.makedirs(DATA_DIR/"sentences", exist_ok=True)
+    os.makedirs(SENTENCES_DIR, exist_ok=True)
 
     leet_dict = leetcsv_to_dict()
     for tamanho in TAM_FRASES_DEFAULT:
+        category_quant = {category: 0 for category in CATEGORIES}
+        arquivo = SENTENCES_DIR/f"frases_{tamanho}_palavras.csv"
 
-        arquivo = f"frases_{tamanho}_palavras.csv"
-
-        with open(DATA_DIR/"sentences"/arquivo, "w", newline="", encoding="utf-8") as arq_csv:
+        with open(arquivo, "w", newline="", encoding="utf-8") as arq_csv:
             writer = csv.writer(arq_csv, delimiter=",")
-            writer.writerow(["frase", "qtd_bad_words", "modificador"])
+            writer.writerow(["frase", "qtd_bad_words", "category"])
             for _ in range(QUANT_LINHAS_DEFAULT):
-                mod = select_modifier()
+                category = random.choice(CATEGORIES)
+                category_quant[category] += 1
 
                 frase_atual = ""
                 conta_bad_words = 0
                 for _ in range(tamanho):
-                    if random.random() < 0.75:
+                    if category == "good_word" or random.random() < 0.75:
                         frase_atual += random.choice(good_words).strip() + " "
                     else:
-                        if mod == "none":
+                        if category == "none":
                             frase_atual += random.choice(bad_words).strip() + " "
                         else:
-                            frase_atual += modifier(random.choice(bad_words).strip(), leet_dict, mod).strip() + " "
+                            frase_atual += modifier(random.choice(bad_words).strip(), leet_dict, category).strip() + " "
 
                         conta_bad_words += 1
 
-                writer.writerow([frase_atual.strip(), conta_bad_words, mod])
+                writer.writerow([frase_atual.strip(), conta_bad_words, category])
+
+        print(f"info: File `{arquivo}` was saved successfully!")
+        for category, quant in category_quant.items():
+            pad_amount = len(CATEGORIES[0]) - len(category)
+            print(f"    info: {quant} samples for category `{category}`{'':<{pad_amount}} were generated")
 
 def gera_palavras():
+    print(f"info: Generating sample words at `{SENTENCES_DIR}`...")
+
     _, bad_words = get_words(good=False)
+    os.makedirs(SENTENCES_DIR, exist_ok=True)
 
     leet_dict = leetcsv_to_dict()
-    with open(DATA_DIR/"sentences"/"sample_words.csv", "w", newline="", encoding="utf-8") as arq_csv:
+    arquivo = SENTENCES_DIR/"sample_words.csv"
+    with open(arquivo, "w", newline="", encoding="utf-8") as arq_csv:
+        category_quant = {category: 0 for category in CATEGORIES}
         writer = csv.writer(arq_csv, delimiter=",")
+
         writer.writerow(["palavra", "modificador"])
         for _ in range(QUANT_LINHAS_DEFAULT*10):
-            mod = select_modifier(hidden=True)
+            category = random.choice(CATEGORIES)
+            category_quant[category] += 1
 
             word = random.choice(bad_words).strip()
-            if mod == "hidden":
+            if category == "good_word":
                 word = random.choice(hidden_bad_words).strip()
-            elif mod != "none":
-                word = modifier(word, leet_dict, mod).strip()
+            elif category != "none":
+                word = modifier(word, leet_dict, category).strip()
 
-            writer.writerow([word, mod])
+            writer.writerow([word, category])
+        
+    print(f"info: File `{arquivo}` was saved sucessfully!")
+    for category, quant in category_quant.items():
+        pad_amount = len(CATEGORIES[0]) - len(category)
+        print(f"    info: {quant} samples for category `{category}`{'':<{pad_amount}} were generated")
+    
 
-def select_modifier(hidden=False):
-    modificadores = MODIFIERS if hidden else MODIFIERS[1:]
-    return random.choice(modificadores)
 
 def stretcher(palavra):
     out = ""
