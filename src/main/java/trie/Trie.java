@@ -2,6 +2,7 @@ package trie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import util.Pair;
@@ -32,7 +33,7 @@ public class Trie {
         }
     }
 
-    public final void addWord(String text, int index) {
+    public void addWord(String text, int index) {
         Node current = this.root;
         int nodeCounting = 0;
 
@@ -51,14 +52,12 @@ public class Trie {
     }
 
     private int findLongestBadWordIndex(String phrase, int j, Node current) {
-        if (current == null || j >= phrase.length()) {
-            return -1;
-        }
+        int size = phrase.length();
 
+        if (current == null || j >= size) return -1;
+
+        List<Character> possibilities = getCharFromLeet(phrase.charAt(j));
         int maxMatch = -1;
-
-        char caracter = Character.toLowerCase(phrase.charAt(j));
-        ArrayList<Character> possibilities = leetMap.get(caracter);
 
         if (possibilities == null) {
             if (current == this.root) return -1;
@@ -69,8 +68,7 @@ public class Trie {
             Node next = current.childs.get(nextChar);
 
             if (next != null) {
-                boolean nextWhiteSpace = j + 1 < phrase.length() && Character.isWhitespace(phrase.charAt(j + 1));
-                if (next.isBadNode || (next.end && nextWhiteSpace)) {
+                if (next.isBadNode || next.end && (j == size - 1 || Character.isWhitespace(phrase.charAt(j + 1)))) {
                     maxMatch = Math.max(maxMatch, j);
                 }
 
@@ -82,14 +80,6 @@ public class Trie {
         return maxMatch;
     }
 
-    private int getNextWordIndexAfterWhiteSpace(String phrase, int index) {
-        int i = index - 1;
-
-        while (++i < phrase.length() && !Character.isWhitespace(phrase.charAt(i))) {}
-        while (++i < phrase.length() && Character.isWhitespace(phrase.charAt(i))) {}
-        return i;
-    }
-
     public int countBadWords(String phrase) {
         int count = 0;
         int size = phrase.length();
@@ -98,10 +88,10 @@ public class Trie {
             int lastMatchIndex = findLongestBadWordIndex(phrase, i, this.root);
 
             if (lastMatchIndex != -1) {
-                i = lastMatchIndex + 1;
+                i = nextIndexAfterWhiteSpace(phrase, lastMatchIndex);
                 count++;
             } else {
-                i = getNextWordIndexAfterWhiteSpace(phrase, i);
+                i = nextIndexAfterWhiteSpace(phrase, i);
             }
         }
 
@@ -118,9 +108,7 @@ public class Trie {
         if (nodeAtual.isBadNode) return true;
         if (index == word.length()) return nodeAtual.end;
 
-        char caracter = Character.toLowerCase(word.charAt(index));
-        ArrayList<Character> possibilidades = leetMap.get(caracter);
-
+        List<Character> possibilidades = getCharFromLeet(word.charAt(index));
         if (possibilidades == null) {
             return checkIsBadWord(word, index + 1, nodeAtual);
         }
@@ -134,6 +122,19 @@ public class Trie {
         }
 
         return false;
+    }
+
+    private List<Character> getCharFromLeet(char leet) {
+        List<Character> possibilities = leetMap.get(leet);
+        return possibilities == null ? leetMap.get(Character.toLowerCase(leet)) : possibilities;
+    }
+
+    private int nextIndexAfterWhiteSpace(String phrase, int index) {
+        int i = index - 1;
+
+        while (++i < phrase.length() && !Character.isWhitespace(phrase.charAt(i))) {}
+        while (++i < phrase.length() && Character.isWhitespace(phrase.charAt(i))) {}
+        return i;
     }
 
     private static class Node {

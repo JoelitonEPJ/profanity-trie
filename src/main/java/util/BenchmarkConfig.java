@@ -31,10 +31,10 @@ import org.openjdk.jmh.infra.Blackhole;
 abstract public class BenchmarkConfig {
 
     @Param({})
-    protected String currentTest;
+    private String currentTest;
 
     @Param({"-1"})
-    protected int phraseSize;
+    private int phraseSize;
 
     private String[] wordsToAdd;
 
@@ -86,10 +86,13 @@ abstract public class BenchmarkConfig {
 
         for (Map.Entry<WordCategory, List<String>> wordsOfCategory : categorizedWords.entrySet()) {
             WordCategory category = wordsOfCategory.getKey();
+            boolean isGoodWordCategory = category.equals(WordCategory.GOOD_WORD);
 
+            categoryCountMap.put(category, 0);
             for (String word : wordsOfCategory.getValue()) {
-                if (checkIsBadWord(word) && category != WordCategory.HIDDEN) {
-                    categoryCountMap.put(category, categoryCountMap.getOrDefault(category, 0) + 1);
+                boolean isBadWord = checkIsBadWord(word);
+                if (isBadWord && !isGoodWordCategory || !isBadWord && isGoodWordCategory) {
+                    categoryCountMap.compute(category, (k, v) -> v + 1);
                 }
             }
         }
@@ -109,8 +112,8 @@ abstract public class BenchmarkConfig {
 
                 if (badWordsCount == phrase.second()) {
                     countError.setFirst(countError.first() + 1);
-                } else if (Math.abs(phrase.second() - badWordsCount) > countError.second()) {
-                    countError.setSecond(Math.abs(phrase.second() - badWordsCount));
+                } else if (Math.abs(phrase.second() - badWordsCount) > Math.abs(countError.second())) {
+                    countError.setSecond(phrase.second() - badWordsCount);
                 }
             }
         }

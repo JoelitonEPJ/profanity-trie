@@ -49,7 +49,7 @@ public class FileUtils {
                 lista.add(linha);
             }
         } catch (IOException e) {
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            System.err.println("error: unable to read file `" + caminho + "`, details: " + e.getMessage());
             return null;
         }
 
@@ -134,7 +134,7 @@ public class FileUtils {
                 Character leet = chave.charAt(0);
                 dicionario.putIfAbsent(leet, new ArrayList<>());
 
-                ArrayList<Character> value = dicionario.get(leet);
+                List<Character> value = dicionario.get(leet);
                 if (!value.contains(colunas[0].charAt(0))) {
                     value.add(colunas[0].charAt(0));
                 }
@@ -255,9 +255,10 @@ public class FileUtils {
      */
     public static void saveFileContent(Path caminho, List<String> linhas) {
         try {
+            System.out.println("info: writing to file `" + caminho + "`");
             Files.write(caminho, linhas, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("Erro ao salvar o arquivo: " + caminho);
+            System.err.println("error: unable to save file `" + caminho + "`, details: " + e.getMessage());
             System.exit(1);
         }
     }
