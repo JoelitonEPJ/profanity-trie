@@ -558,7 +558,7 @@ Foi utilizado o repositório [TheAlgorithms](https://github.com/TheAlgorithms/Ja
 
 - [Arthur Ledra de Azevedo](https://github.com/arthurlazevedo)
 
-- [Carlos Arthur Nóbrega Soares](https://github.com/C-Arthurr)
+- [Carlos Arthur Nóbrega Soares](https://github.com/carlosarthurns)
 
 - [Gabriel Victor de Sousa Lima](https://github.com/gvsl60)
 
